@@ -32,7 +32,11 @@ exports.getHomePage = async (req, res) => {
       layout: 'layouts/main'
     });
   } catch (err) {
-    console.error(err);
+    console.error('Homepage Error:', err);
+    // On Vercel, return JSON so we can debug
+    if (process.env.VERCEL) {
+      return res.status(500).json({ error: err.message, stack: err.stack });
+    }
     res.status(500).render('error', { message: 'Server Error', layout: 'layouts/main' });
   }
 };
