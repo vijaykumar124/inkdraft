@@ -55,8 +55,12 @@ app.use((req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`\n🚀 InkDraft running → http://localhost:${PORT}`);
-  console.log(`📊 Admin panel  → http://localhost:${PORT}/admin/login`);
-  console.log(`🔑 admin@inkdraft.com / admin123\n`);
-});
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`\n🚀 InkDraft running → http://localhost:${PORT}`);
+    console.log(`📊 Admin panel  → http://localhost:${PORT}/admin/login`);
+    console.log(`🔑 admin@inkdraft.com / admin123\n`);
+  });
+}
+
+module.exports = app;
