@@ -11,14 +11,10 @@ const mongoose = require('mongoose');
 
 const app = express();
 
-// ── Connect MongoDB Atlas (graceful — don't crash if env is missing) ──
-if (process.env.MONGODB_URI) {
-  mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('✅ MongoDB Atlas Connected!'))
-    .catch(err => console.error('❌ MongoDB Error:', err.message));
-} else {
-  console.warn('⚠️  MONGODB_URI not set — database features disabled');
-}
+const connectDb = require('./config/connectDb');
+
+// ── Connect MongoDB Atlas ─────────────────────────────────
+connectDb();
 
 // View Engine
 app.set('view engine', 'ejs');
