@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title + ' — InkDraft Admin' : 'InkDraft Admin' %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+</head>
+<body class="admin-body">
+
+<!-- Sidebar -->
+<aside class="admin-sidebar" id="admin-sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-logo">I</div>
+    <div>
+      <div class="sidebar-brand-text">Ink<span>Draft</span></div>
+      <div class="sidebar-brand-sub">Admin Panel</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">Main</div>
+    <a href="/admin/dashboard" class="sidebar-link" id="nav-dashboard">
+      <span class="sidebar-icon">📊</span> Dashboard
+    </a>
+    <a href="/admin/orders" class="sidebar-link" id="nav-orders">
+      <span class="sidebar-icon">📋</span> Orders
+      <% if (typeof pendingOrders !== 'undefined' && pendingOrders > 0) { %>
+        <span class="sidebar-badge"><%= pendingOrders %></span>
+      <% } %>
+    </a>
+
+    <div class="sidebar-section-label">Content</div>
+    <a href="/admin/artists" class="sidebar-link" id="nav-artists">
+      <span class="sidebar-icon">👤</span> Artists
+    </a>
+    <a href="/admin/designs" class="sidebar-link" id="nav-designs">
+      <span class="sidebar-icon">🎨</span> Designs
+    </a>
+    <a href="/admin/categories" class="sidebar-link" id="nav-categories">
+      <span class="sidebar-icon">📁</span> Categories
+    </a>
+    <a href="/admin/testimonials" class="sidebar-link" id="nav-testimonials">
+      <span class="sidebar-icon">⭐</span> Testimonials
+    </a>
+
+    <div class="sidebar-section-label">Business</div>
+    <a href="/admin/pricing" class="sidebar-link" id="nav-pricing">
+      <span class="sidebar-icon">💳</span> Pricing Plans
+    </a>
+    <a href="/admin/settings" class="sidebar-link" id="nav-settings">
+      <span class="sidebar-icon">⚙️</span> Settings
+    </a>
+
+    <div class="sidebar-section-label">Site</div>
+    <a href="/" target="_blank" class="sidebar-link">
+      <span class="sidebar-icon">🌐</span> View Site
+    </a>
+    <a href="/admin/logout" class="sidebar-link" style="color: var(--danger);">
+      <span class="sidebar-icon">🚪</span> Logout
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <% if (typeof admin !== 'undefined') { %>
+    <div class="admin-user-card">
+      <div class="admin-avatar"><%= admin.name.charAt(0).toUpperCase() %></div>
+      <div class="admin-info">
+        <div class="admin-name"><%= admin.name %></div>
+        <div class="admin-role"><%= admin.role %></div>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</aside>
+
+<!-- Main Area -->
+<div class="admin-main">
+  <!-- Header -->
+  <header class="admin-header">
+    <div class="admin-header-left">
+      <div>
+        <div class="admin-header-title"><%= typeof title !== 'undefined' ? title : 'Dashboard' %></div>
+        <div class="admin-header-breadcrumb">InkDraft → Admin → <%= typeof title !== 'undefined' ? title : 'Dashboard' %></div>
+      </div>
+    </div>
+    <div class="admin-header-right">
+      <a href="/" target="_blank" class="header-btn" title="View Site">🌐</a>
+      <a href="/admin/settings" class="header-btn" title="Settings">⚙️</a>
+      <a href="/admin/logout" class="header-btn" title="Logout" style="color:var(--danger)">🚪</a>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="admin-content">
+    <%- body %>
+  </main>
+</div>
+
+<!-- Mobile sidebar toggle -->
+<button class="sidebar-mobile-toggle" onclick="document.getElementById('admin-sidebar').classList.toggle('open')">☰</button>
+
+<script src="/js/admin.js"></script>
+<script>
+  // Auto-highlight active sidebar link
+  const path = window.location.pathname;
+  document.querySelectorAll('.sidebar-link').forEach(link => {
+    if (link.getAttribute('href') === path) link.classList.add('active');
+  });
+</script>
+</body>
+</html>

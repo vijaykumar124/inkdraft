@@ -1,0 +1,592 @@
+<!-- Page Loader -->
+<div id="page-loader">
+  <div class="loader-inner">
+    <div class="loader-logo">Ink<span>Draft</span></div>
+    <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     NAVBAR — Matches screenshot: Logo | Links | 🌙 Login | Get Started
+     ══════════════════════════════════════════════════════ -->
+<nav id="navbar">
+  <div class="container">
+    <div class="nav-inner">
+
+      <!-- Logo -->
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">𝔻</div>
+        InkDraft
+      </a>
+
+      <!-- Center Links -->
+      <ul class="nav-links">
+        <li><a href="#categories">Styles</a></li>
+        <li><a href="#journey">How it works</a></li>
+        <li><a href="#featured">Gallery</a></li>
+        <li><a href="#artists">Artists</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#testimonials">Reviews</a></li>
+      </ul>
+
+      <!-- Right: theme toggle + login + CTA -->
+      <div class="nav-cta">
+        <!-- Day/Night Toggle Button -->
+        <button class="theme-toggle" id="theme-toggle" title="Toggle day/night mode" aria-label="Toggle theme">
+          <!-- Moon icon (shown in dark/night mode) -->
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <!-- Sun icon (shown in light/day mode) -->
+          <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
+
+        <a href="/admin/login" class="nav-login">Login</a>
+
+        <a href="#order-form" class="nav-get-started">Get Started</a>
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Nav -->
+<nav class="nav-mobile" id="nav-mobile">
+  <a href="#categories" class="mobile-link">Styles</a>
+  <a href="#journey" class="mobile-link">How it works</a>
+  <a href="#featured" class="mobile-link">Gallery</a>
+  <a href="#artists" class="mobile-link">Artists</a>
+  <a href="#pricing" class="mobile-link">Pricing</a>
+  <a href="#order-form" class="btn btn-gold">Get Started</a>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════
+     HERO — Split layout: left content, right tattoo image
+     ══════════════════════════════════════════════════════ -->
+<section id="hero" class="container">
+  <div class="hero-content">
+    <span class="eyebrow">Premium Tattoo Studio</span>
+
+    <h1 class="hero-title">
+      <span class="line"><span data-reveal>Design Your</span></span>
+      <span class="line"><span data-reveal style="transition-delay:0.12s">Next <em>Tattoo</em></span></span>
+    </h1>
+
+    <p class="hero-desc" data-reveal style="transition-delay:0.22s">
+      <%= settings.heroDescription || 'Work with world-class tattoo artists to bring your vision to life. From minimalist line work to elaborate full-sleeve masterpieces.' %>
+    </p>
+
+    <div class="hero-actions" data-reveal style="transition-delay:0.32s">
+      <a href="#order-form" class="btn btn-gold btn-lg">Order Custom Design →</a>
+      <a href="#featured" class="btn btn-outline btn-lg">Browse Gallery</a>
+    </div>
+
+    <div class="hero-stats" data-reveal style="transition-delay:0.42s">
+      <div>
+        <span class="hero-stat-number" data-counter="<%= settings.statDesigns || 3000 %>">0</span>
+        <div class="hero-stat-label">Designs Created</div>
+      </div>
+      <div>
+        <span class="hero-stat-number" data-counter="<%= settings.statArtists || 50 %>">0</span>
+        <div class="hero-stat-label">Expert Artists</div>
+      </div>
+      <div>
+        <span class="hero-stat-number" data-counter="<%= settings.statClients || 8500 %>">0</span>
+        <div class="hero-stat-label">Happy Clients</div>
+      </div>
+      <div>
+        <span class="hero-stat-number" data-counter="<%= settings.statYears || 12 %>">0</span>
+        <div class="hero-stat-label">Years Exp.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: premium tattoo image -->
+  <div class="hero-visual" data-reveal="right">
+    <img
+      src="https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=900&q=85&fit=crop&crop=center"
+      alt="Premium Japanese sleeve tattoo"
+      class="hero-image-main"
+      fetchpriority="high">
+    <div class="hero-badge">
+      <div class="hero-badge-icon">🏆</div>
+      <div class="hero-badge-text">
+        <strong>Award Winning Studio</strong>
+        <span>Best Tattoo Studio 2024</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════
+     MARQUEE
+     ══════════════════════════════════════════════════════ -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <% const marqueeItems = ['Traditional','Neo-Traditional','Minimalist','Geometric','Watercolor','Blackwork','Realism','Japanese','Tribal','Illustrative','Fine Line','Dotwork']; %>
+    <% for(let i=0; i<2; i++) { %>
+      <% marqueeItems.forEach(item => { %>
+        <div class="marquee-item">
+          <span class="marquee-dot"></span>
+          <span><%= item %></span>
+        </div>
+      <% }); %>
+    <% } %>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     BROWSE CATEGORIES
+     ══════════════════════════════════════════════════════ -->
+<section id="categories" class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="eyebrow">Explore Styles</span>
+        <h2 class="heading-lg" data-reveal>Browse Tattoo <span class="text-gold">Categories</span></h2>
+      </div>
+      <a href="#featured" class="btn btn-outline">View All Designs →</a>
+    </div>
+
+    <div class="categories-grid">
+      <%
+        const defaultCats = [
+          { name: 'Traditional',  img: 'https://images.unsplash.com/photo-1612459284453-a2b74c3f57c3?w=200&q=70&fit=crop&crop=center' },
+          { name: 'Minimalist',   img: 'https://images.unsplash.com/photo-1567527827878-a5d3aba7eec5?w=200&q=70&fit=crop&crop=center' },
+          { name: 'Geometric',    img: 'https://images.unsplash.com/photo-1543489822-c49534f3271f?w=200&q=70&fit=crop&crop=center' },
+          { name: 'Blackwork',    img: 'https://images.unsplash.com/photo-1597075380606-cf8e1e8a6f8b?w=200&q=70&fit=crop&crop=center' },
+          { name: 'Watercolor',   img: 'https://images.unsplash.com/photo-1561883088-039e53143d73?w=200&q=70&fit=crop&crop=center' },
+          { name: 'Realism',      img: 'https://images.unsplash.com/photo-1554188248-986adbb73be4?w=200&q=70&fit=crop&crop=center' },
+          { name: 'Japanese',     img: 'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=200&q=70&fit=crop&crop=center' },
+          { name: 'Fine Line',    img: 'https://images.unsplash.com/photo-1590246813516-a8b8d47c74c5?w=200&q=70&fit=crop&crop=center' }
+        ];
+        const displayCats = (categories && categories.length > 0) ? categories : defaultCats;
+      %>
+      <% displayCats.forEach((cat, i) => { %>
+        <div class="category-card" data-reveal style="transition-delay: <%= i * 0.07 %>s">
+          <div class="category-circle">
+            <img src="<%= cat.image || cat.img %>" alt="<%= cat.name %>" loading="lazy">
+          </div>
+          <span class="category-name"><%= cat.name %></span>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     HOW IT WORKS
+     ══════════════════════════════════════════════════════ -->
+<section id="journey" class="section" style="background:var(--bg-secondary)">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:0">
+      <span class="eyebrow">How It Works</span>
+      <h2 class="heading-lg" data-reveal>Your Tattoo <span class="text-gold">Journey</span></h2>
+    </div>
+    <div class="journey-grid">
+      <% [
+        { num:'01', title:'Share Your Vision',      desc:'Tell us your idea, style preference, placement, and size. Upload any reference images for inspiration.' },
+        { num:'02', title:'Artist Matching',        desc:'We match you with the perfect artist based on your style and their expertise. Get personalized quotes.' },
+        { num:'03', title:'Design Consultation',    desc:'Collaborate directly with your artist to refine the design until it\'s exactly what you imagined.' },
+        { num:'04', title:'Get Inked',              desc:'Visit our studio or book a session. Walk out with art that lasts a lifetime, with complete aftercare support.' }
+      ].forEach((step, i) => { %>
+        <div class="journey-step" data-reveal style="transition-delay: <%= i * 0.1 %>s">
+          <div class="journey-number"><%= step.num %></div>
+          <h3><%= step.title %></h3>
+          <p><%= step.desc %></p>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     ORDER FORM
+     ══════════════════════════════════════════════════════ -->
+<section id="order-form" class="section">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:52px">
+      <span class="eyebrow">Custom Design</span>
+      <h2 class="heading-lg" data-reveal>Order Your Custom<br><span class="text-gold">Tattoo Design</span></h2>
+      <p class="body-md" style="margin-top:14px" data-reveal>Fill in the details and we'll connect you with the perfect artist within 24 hours.</p>
+    </div>
+    <div class="form-card" data-reveal="scale">
+      <form id="tattoo-order-form" autocomplete="off">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Your Name *</label>
+            <input type="text" name="clientName" class="form-control" placeholder="John Doe" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address *</label>
+            <input type="email" name="clientEmail" class="form-control" placeholder="john@example.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" name="clientPhone" class="form-control" placeholder="+1 (555) 000-0000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tattoo Style *</label>
+            <select name="tattooStyle" class="form-control" required>
+              <option value="" disabled selected>Select a style</option>
+              <option>Traditional</option><option>Neo-Traditional</option><option>Minimalist</option>
+              <option>Geometric</option><option>Watercolor</option><option>Blackwork</option>
+              <option>Realism</option><option>Japanese</option><option>Tribal</option>
+              <option>Fine Line</option><option>Dotwork</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Placement *</label>
+            <select name="placement" class="form-control" required>
+              <option value="" disabled selected>Body placement</option>
+              <option>Arm (Upper)</option><option>Arm (Lower / Forearm)</option><option>Full Sleeve</option>
+              <option>Chest</option><option>Back (Upper)</option><option>Back (Full)</option>
+              <option>Rib</option><option>Leg (Thigh)</option><option>Leg (Calf)</option>
+              <option>Ankle / Foot</option><option>Neck</option><option>Hand / Fingers</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Approximate Size *</label>
+            <select name="size" class="form-control" required>
+              <option value="" disabled selected>Size of tattoo</option>
+              <option>Tiny (under 2")</option><option>Small (2-4")</option><option>Medium (4-6")</option>
+              <option>Large (6-10")</option><option>Extra Large (10"+)</option>
+              <option>Half Sleeve</option><option>Full Sleeve</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Budget Range</label>
+            <select name="budget" class="form-control">
+              <option value="" disabled selected>Select budget</option>
+              <option>Under $100</option><option>$100 – $250</option><option>$250 – $500</option>
+              <option>$500 – $1,000</option><option>$1,000 – $2,500</option><option>$2,500+</option>
+            </select>
+          </div>
+          <% if(artists && artists.length > 0) { %>
+          <div class="form-group">
+            <label class="form-label">Preferred Artist</label>
+            <select name="preferredArtist" class="form-control">
+              <option value="">No preference</option>
+              <% artists.forEach(a => { %>
+                <option value="<%= a._id %>"><%= a.name %> — <%= a.specialty %></option>
+              <% }); %>
+            </select>
+          </div>
+          <% } %>
+          <div class="form-group full">
+            <label class="form-label">Describe Your Vision *</label>
+            <textarea name="description" class="form-control" required placeholder="Tell us about your tattoo idea — the design, meaning, imagery, colors, or any specific elements you want included..."></textarea>
+          </div>
+        </div>
+        <div class="form-submit">
+          <button type="submit" class="btn btn-gold btn-lg">Submit My Design Request →</button>
+          <p class="form-note">🔒 We'll never share your info. Response within 24 hours.</p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     FEATURED DESIGNS
+     ══════════════════════════════════════════════════════ -->
+<section id="featured" class="section" style="background:var(--bg-secondary)">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="eyebrow">Our Portfolio</span>
+        <h2 class="heading-lg" data-reveal>Featured <span class="text-gold">Designs</span></h2>
+      </div>
+      <a href="#order-form" class="btn btn-outline">Get Similar Design →</a>
+    </div>
+    <div class="designs-grid">
+      <%
+        const demoDesigns = [
+          { img:'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=800&q=80&fit=crop', title:'Dragon Sleeve',     cat:'Japanese'    },
+          { img:'https://images.unsplash.com/photo-1543489822-c49534f3271f?w=800&q=80&fit=crop', title:'Geometric Wolf',    cat:'Geometric'   },
+          { img:'https://images.unsplash.com/photo-1597075380606-cf8e1e8a6f8b?w=800&q=80&fit=crop', title:'Rose Blackwork',   cat:'Blackwork'   },
+          { img:'https://images.unsplash.com/photo-1590246813516-a8b8d47c74c5?w=800&q=80&fit=crop', title:'Fine Line Portrait',cat:'Fine Line'   },
+          { img:'https://images.unsplash.com/photo-1612459284453-a2b74c3f57c3?w=800&q=80&fit=crop', title:'Traditional Eagle', cat:'Traditional' },
+          { img:'https://images.unsplash.com/photo-1561883088-039e53143d73?w=800&q=80&fit=crop', title:'Watercolor Galaxy', cat:'Watercolor'  }
+        ];
+        const showDesigns = (featuredDesigns && featuredDesigns.length > 0) ? featuredDesigns : demoDesigns;
+      %>
+      <% showDesigns.slice(0,6).forEach((d, i) => { %>
+        <div class="design-card" data-reveal style="transition-delay:<%= i*0.07 %>s">
+          <img src="<%= d.image || d.img %>" alt="<%= d.title %>" loading="lazy">
+          <div class="design-overlay">
+            <div class="design-title"><%= d.title %></div>
+            <div class="design-category"><%= d.category || d.cat %></div>
+            <div class="design-actions">
+              <a href="#order-form" class="design-action-btn">Get This Style</a>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     CTA BANNER
+     ══════════════════════════════════════════════════════ -->
+<section id="cta-banner">
+  <div class="container">
+    <div class="cta-banner-inner">
+      <div>
+        <span class="cta-eyebrow" data-reveal>From Concept</span>
+        <h2 class="cta-title" data-reveal>To <span style="color:var(--gold)">Masterpiece</span><br>On Your Skin</h2>
+        <p class="cta-desc" data-reveal>Our artists have transformed thousands of ideas into wearable art. Every tattoo is a collaboration — your vision, our expertise, one unforgettable result.</p>
+        <div class="cta-actions" data-reveal>
+          <a href="#order-form" class="btn btn-gold btn-lg">Start Your Journey →</a>
+          <a href="#artists" class="btn btn-outline">Meet Our Artists</a>
+        </div>
+      </div>
+      <div class="cta-visual" data-reveal="right">
+        <div class="cta-image-stack">
+          <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=700&q=80&fit=crop" alt="Tattoo art" class="cta-img-main" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1590246814883-55516d2d2267?w=400&q=80&fit=crop" alt="Tattoo detail" class="cta-img-accent" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cta-glow"></div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     ARTISTS
+     ══════════════════════════════════════════════════════ -->
+<section id="artists" class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="eyebrow">The Team</span>
+        <h2 class="heading-lg" data-reveal>Meet Our <span class="text-gold">Artists</span></h2>
+      </div>
+    </div>
+    <div class="artists-grid">
+      <%
+        const demoArtists = [
+          { name:'Alex Rivera',   specialty:'Japanese',  img:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80&fit=crop&crop=face', rating:'5.0', reviewCount:247,  instagram:'alex_inkcraft'   },
+          { name:'Maya Chen',     specialty:'Fine Line', img:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80&fit=crop&crop=face', rating:'4.9', reviewCount:198,  instagram:'maya_fineline'   },
+          { name:'Jordan Blake',  specialty:'Geometric', img:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80&fit=crop&crop=face', rating:'4.8', reviewCount:156,  instagram:'jordan_geo'      },
+          { name:'Sam Torres',    specialty:'Realism',   img:'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80&fit=crop&crop=face', rating:'5.0', reviewCount:312,  instagram:'sam_realism'     },
+          { name:'Kai Nakamura',  specialty:'Blackwork', img:'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80&fit=crop&crop=face', rating:'4.9', reviewCount:203,  instagram:'kai_blackwork'   }
+        ];
+        const showArtists = (artists && artists.length > 0) ? artists : demoArtists;
+      %>
+      <% showArtists.slice(0,5).forEach((a, i) => { %>
+        <div class="artist-card" data-reveal style="transition-delay:<%= i*0.08 %>s">
+          <div class="artist-photo">
+            <img src="<%= a.image || a.img %>" alt="<%= a.name %>" loading="lazy">
+            <div class="artist-photo-overlay">
+              <span class="artist-instagram">📸 @<%= a.instagram || 'inkdraft' %></span>
+            </div>
+          </div>
+          <div class="artist-name"><%= a.name %></div>
+          <div class="artist-specialty"><%= a.specialty %></div>
+          <div class="artist-rating">
+            <span class="star">★</span> <%= a.rating || '5.0' %>
+            <span style="color:var(--text-muted)">(<%= a.reviewCount || 0 %> reviews)</span>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     TESTIMONIALS
+     ══════════════════════════════════════════════════════ -->
+<section id="testimonials" class="section" style="background:var(--bg-secondary)">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:52px">
+      <span class="eyebrow">Client Stories</span>
+      <h2 class="heading-lg" data-reveal>Trusted by <span class="text-gold">Thousands</span></h2>
+    </div>
+    <div class="testimonials-track">
+      <%
+        const demoReviews = [
+          { name:'Sarah M.',  location:'New York, NY',    rating:5, review:'Absolutely blown away by my sleeve. The artist understood exactly what I wanted and brought it to life in the most incredible way. 10/10 would recommend InkDraft to anyone.' },
+          { name:'James K.',  location:'Los Angeles, CA', rating:5, review:'From the initial consultation to the final session, the entire experience was world-class. My geometric back piece is exactly what I envisioned. Pure artistry.' },
+          { name:'Priya S.',  location:'Chicago, IL',     rating:5, review:'I was nervous about my first tattoo, but the team made me feel so comfortable. The fine line botanical piece on my forearm is delicate and perfect. Couldn\'t be happier!' }
+        ];
+        const showReviews = (testimonials && testimonials.length > 0) ? testimonials : demoReviews;
+      %>
+      <% showReviews.forEach((t, i) => { %>
+        <div class="testimonial-card" data-reveal style="transition-delay:<%= i*0.1 %>s">
+          <div class="testimonial-stars">
+            <% for(let s=0;s<(t.rating||5);s++) { %><span class="star">★</span><% } %>
+          </div>
+          <p class="testimonial-text">"<%= t.review %>"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:var(--gold-glow);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--gold);font-size:0.85rem">
+              <%= t.name.charAt(0) %>
+            </div>
+            <div>
+              <div class="testimonial-name"><%= t.name %></div>
+              <div class="testimonial-location"><%= t.location || t.tattooStyle || '' %></div>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     GALLERY MOSAIC
+     ══════════════════════════════════════════════════════ -->
+<section id="gallery" class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="eyebrow">Real Work</span>
+        <h2 class="heading-lg" data-reveal>Real Tattoos, <span class="text-gold">Real Clients</span></h2>
+      </div>
+      <a href="#order-form" class="btn btn-ghost">Get Yours →</a>
+    </div>
+    <div class="gallery-grid">
+      <%
+        const galleryImgs = [
+          'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=800&q=80&fit=crop',
+          'https://images.unsplash.com/photo-1597075380606-cf8e1e8a6f8b?w=800&q=80&fit=crop',
+          'https://images.unsplash.com/photo-1543489822-c49534f3271f?w=800&q=80&fit=crop',
+          'https://images.unsplash.com/photo-1590246813516-a8b8d47c74c5?w=800&q=80&fit=crop',
+          'https://images.unsplash.com/photo-1612459284453-a2b74c3f57c3?w=800&q=80&fit=crop',
+          'https://images.unsplash.com/photo-1561883088-039e53143d73?w=800&q=80&fit=crop',
+          'https://images.unsplash.com/photo-1567527827878-a5d3aba7eec5?w=800&q=80&fit=crop',
+          'https://images.unsplash.com/photo-1554188248-986adbb73be4?w=800&q=80&fit=crop'
+        ];
+        const showGallery = (galleryDesigns && galleryDesigns.length > 0)
+          ? galleryDesigns.map((d,i) => d.image || galleryImgs[i])
+          : galleryImgs;
+      %>
+      <% showGallery.slice(0,8).forEach((imgSrc, i) => { %>
+        <div class="gallery-item" data-reveal style="transition-delay:<%= i*0.05 %>s">
+          <img src="<%= imgSrc %>" alt="Tattoo gallery <%= i+1 %>" loading="lazy">
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     PRICING
+     ══════════════════════════════════════════════════════ -->
+<section id="pricing" class="section" style="background:var(--bg-secondary)">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:56px">
+      <span class="eyebrow">Investment</span>
+      <h2 class="heading-lg" data-reveal>Choose Your <span class="text-gold">Perfect Plan</span></h2>
+      <p class="body-md" style="margin-top:14px" data-reveal>All plans include free consultation, revisions, and aftercare guide.</p>
+    </div>
+    <div class="pricing-grid">
+      <%
+        const defaultPlans = [
+          { name:'Starter',  price:29,  desc:'Perfect for small, simple designs',            popular:false, features:['1 design concept','Up to 2 revisions','Standard placement','Digital file','Aftercare guide']                           },
+          { name:'Premium',  price:89,  desc:'Our most popular package for custom work',      popular:true,  features:['3 design concepts','Unlimited revisions','Artist consultation','Priority booking','Full aftercare kit','Touch-up session'] },
+          { name:'Elite',    price:249, desc:'Full sleeve & complex full-body artwork',       popular:false, features:['Custom concept art','Dedicated senior artist','Full sleeve planning','Multiple sessions','VIP access','1 year touch-ups','Photo session'] }
+        ];
+        const showPlans = (pricingPlans && pricingPlans.length > 0) ? pricingPlans : defaultPlans;
+      %>
+      <% showPlans.forEach((plan, i) => { %>
+        <div class="pricing-card <%= plan.isPopular || plan.popular ? 'popular' : '' %>" data-reveal style="transition-delay:<%= i*0.1 %>s">
+          <% if(plan.isPopular || plan.popular) { %><span class="popular-badge">Most Popular</span><% } %>
+          <div class="pricing-name"><%= plan.name %></div>
+          <div class="pricing-price">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-amount"><%= plan.price %></span>
+            <span class="pricing-period">/<%= plan.period || 'session' %></span>
+          </div>
+          <p class="pricing-desc"><%= plan.description || plan.desc %></p>
+          <ul class="pricing-features">
+            <% (plan.features || []).forEach(f => { %>
+              <li class="pricing-feature"><span class="feature-check">✓</span> <%= f %></li>
+            <% }); %>
+          </ul>
+          <a href="#order-form" class="btn <%= plan.isPopular || plan.popular ? 'btn-gold' : 'btn-outline' %>" style="width:100%;justify-content:center;margin-top:auto">
+            <%= plan.ctaText || 'Book Now' %> →
+          </a>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo" style="font-size:1.3rem">
+          <div class="nav-logo-icon" style="width:28px;height:28px;font-size:0.85rem">𝔻</div>
+          InkDraft
+        </div>
+        <p>Premium tattoo studio bringing your vision to life with world-class artistry, personalized design, and an unforgettable experience.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-link" aria-label="Instagram">📸</a>
+          <a href="#" class="social-link" aria-label="Facebook">👤</a>
+          <a href="#" class="social-link" aria-label="TikTok">🎵</a>
+          <a href="#" class="social-link" aria-label="Pinterest">📌</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-heading">Studio</div>
+        <ul class="footer-links">
+          <li><a href="#categories">Tattoo Styles</a></li>
+          <li><a href="#artists">Our Artists</a></li>
+          <li><a href="#featured">Portfolio</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#journey">Process</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Services</div>
+        <ul class="footer-links">
+          <li><a href="#order-form">Custom Design</a></li>
+          <li><a href="#">Cover-Up Tattoos</a></li>
+          <li><a href="#">Touch-Up Sessions</a></li>
+          <li><a href="#">Consultations</a></li>
+          <li><a href="#">Gift Cards</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <ul class="footer-links">
+          <li><a href="mailto:<%= settings.contactEmail || 'hello@inkdraft.com' %>"><%= settings.contactEmail || 'hello@inkdraft.com' %></a></li>
+          <li><a href="tel:<%= settings.contactPhone || '+1 555 000 0000' %>"><%= settings.contactPhone || '+1 (555) 000-0000' %></a></li>
+          <li><a href="#"><%= settings.address || '123 Art District, NYC' %></a></li>
+          <li><a href="#"><%= settings.hours || 'Mon–Sat: 10am – 8pm' %></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <%= new Date().getFullYear() %> InkDraft. All rights reserved.</span>
+      <span>
+        <a href="#">Privacy Policy</a> &nbsp;·&nbsp;
+        <a href="#">Terms of Service</a>
+      </span>
+    </div>
+  </div>
+</footer>

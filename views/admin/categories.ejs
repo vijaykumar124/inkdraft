@@ -1,0 +1,79 @@
+<!-- Categories Management -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Tattoo Categories</div>
+    <button class="btn btn-primary" data-open-modal="add-cat-modal">+ Add Category</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Category</th><th>Slug</th><th>Designs</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        <% if (categories && categories.length > 0) { %>
+          <% categories.forEach(cat => { %>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <% if (cat.image) { %><img src="<%= cat.image %>" class="table-img" style="border-radius:50%" alt="<%= cat.name %>"><% } %>
+                  <span style="font-weight:600;color:var(--text-primary)"><%= cat.name %></span>
+                </div>
+              </td>
+              <td style="color:var(--text-muted);font-size:0.78rem"><%= cat.slug %></td>
+              <td><span class="badge badge-gray"><%= cat.designCount %></span></td>
+              <td><span class="badge <%= cat.isActive ? 'badge-green' : 'badge-red' %>"><%= cat.isActive ? 'Active' : 'Hidden' %></span></td>
+              <td>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-danger-outline btn-sm btn-icon delete-cat" data-id="<%= cat._id %>" title="Delete">🗑</button>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📁</div><div class="empty-title">No categories</div></div></td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal-backdrop" id="add-cat-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Category</div>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="add-cat-form" enctype="multipart/form-data">
+        <div class="form-group"><label class="form-label">Category Name *</label>
+          <input type="text" name="name" class="form-control" placeholder="e.g. Traditional" required></div>
+        <div class="form-group"><label class="form-label">Slug *</label>
+          <input type="text" name="slug" class="form-control" placeholder="e.g. traditional" required></div>
+        <div class="form-group"><label class="form-label">Description</label>
+          <textarea name="description" class="form-control" placeholder="Brief description..."></textarea></div>
+        <div class="form-group"><label class="form-label">Category Image</label>
+          <div class="file-drop">
+            <input type="file" name="image" accept="image/*">
+            <div class="file-drop-text">Drop or <strong>click to upload</strong></div>
+            <div class="file-preview"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Cancel</button>
+      <button class="btn btn-primary" id="save-cat-btn">Add Category</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('save-cat-btn').addEventListener('click', async () => {
+  const result = await submitForm(document.getElementById('add-cat-form'), '/admin/categories', 'POST');
+  if (result.success) setTimeout(() => location.reload(), 800);
+});
+document.querySelectorAll('.delete-cat').forEach(btn => {
+  btn.addEventListener('click', () => confirmDelete(`/admin/categories/${btn.dataset.id}`, () => btn.closest('tr').remove()));
+});
+</script>

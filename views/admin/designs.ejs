@@ -1,0 +1,135 @@
+<!-- Designs Management -->
+<div class="card">
+  <div class="card-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="card-title">All Designs</div>
+      <span class="badge badge-gold"><%= designs.length %> total</span>
+    </div>
+    <button class="btn btn-primary" data-open-modal="add-design-modal">+ Add Design</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Design</th>
+          <th>Category</th>
+          <th>Artist</th>
+          <th>Tags</th>
+          <th>Featured</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (designs && designs.length > 0) { %>
+          <% designs.forEach(design => { %>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <img src="<%= design.image %>" alt="<%= design.title %>" class="table-img">
+                  <span style="font-weight:600;color:var(--text-primary);font-size:0.83rem"><%= design.title %></span>
+                </div>
+              </td>
+              <td><%= design.category %></td>
+              <td><%= design.artist ? design.artist.name : '—' %></td>
+              <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;font-size:0.75rem;color:var(--text-muted)"><%= (design.tags || []).join(', ') %></td>
+              <td>
+                <span class="badge <%= design.isFeatured ? 'badge-gold' : 'badge-gray' %>">
+                  <%= design.isFeatured ? '★ Featured' : 'No' %>
+                </span>
+              </td>
+              <td>
+                <span class="badge <%= design.isActive ? 'badge-green' : 'badge-red' %>">
+                  <%= design.isActive ? 'Active' : 'Hidden' %>
+                </span>
+              </td>
+              <td>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-danger-outline btn-sm btn-icon delete-design" data-id="<%= design._id %>" title="Delete">🗑</button>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr><td colspan="7">
+            <div class="empty-state"><div class="empty-icon">🎨</div><div class="empty-title">No designs yet</div></div>
+          </td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Design Modal -->
+<div class="modal-backdrop" id="add-design-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add New Design</div>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="add-design-form" enctype="multipart/form-data">
+        <div class="form-group">
+          <label class="form-label">Design Title *</label>
+          <input type="text" name="title" class="form-control" placeholder="e.g. Dragon Sleeve" required>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Category *</label>
+            <select name="category" class="form-control" required>
+              <option value="" disabled selected>Select category</option>
+              <option>Traditional</option><option>Neo-Traditional</option><option>Minimalist</option>
+              <option>Geometric</option><option>Watercolor</option><option>Blackwork</option>
+              <option>Realism</option><option>Japanese</option><option>Tribal</option>
+              <option>Fine Line</option><option>Dotwork</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Artist</label>
+            <select name="artist" class="form-control">
+              <option value="">No specific artist</option>
+              <% artists.forEach(a => { %>
+                <option value="<%= a._id %>"><%= a.name %></option>
+              <% }); %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags (comma separated)</label>
+          <input type="text" name="tags" class="form-control" placeholder="e.g. dragon, sleeve, japanese, color">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Featured</label>
+          <select name="isFeatured" class="form-control">
+            <option value="false">No</option>
+            <option value="true">Yes — Show on homepage</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Design Image *</label>
+          <div class="file-drop">
+            <input type="file" name="image" accept="image/*" required>
+            <div class="file-drop-icon">🎨</div>
+            <div class="file-drop-text">Drop design image or <strong>click to upload</strong></div>
+            <div class="file-preview"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Cancel</button>
+      <button class="btn btn-primary" id="save-design-btn">Upload Design</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('save-design-btn').addEventListener('click', async () => {
+  const form = document.getElementById('add-design-form');
+  const result = await submitForm(form, '/admin/designs', 'POST');
+  if (result.success) setTimeout(() => location.reload(), 800);
+});
+document.querySelectorAll('.delete-design').forEach(btn => {
+  btn.addEventListener('click', () => confirmDelete(`/admin/designs/${btn.dataset.id}`, () => btn.closest('tr').remove()));
+});
+</script>

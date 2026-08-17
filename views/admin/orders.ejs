@@ -1,0 +1,135 @@
+<!-- Orders Management -->
+<div class="card" style="margin-bottom:24px">
+  <div class="card-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="card-title">All Orders</div>
+      <span class="badge badge-gold"><%= total %> total</span>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <select id="status-filter" class="form-control" style="width:auto;padding:8px 12px;font-size:0.8rem" onchange="location.href='/admin/orders?status='+this.value">
+        <option value="">All Status</option>
+        <option <%= status === 'pending' ? 'selected' : '' %>>pending</option>
+        <option <%= status === 'reviewing' ? 'selected' : '' %>>reviewing</option>
+        <option <%= status === 'quoted' ? 'selected' : '' %>>quoted</option>
+        <option <%= status === 'confirmed' ? 'selected' : '' %>>confirmed</option>
+        <option <%= status === 'in-progress' ? 'selected' : '' %>>in-progress</option>
+        <option <%= status === 'completed' ? 'selected' : '' %>>completed</option>
+        <option <%= status === 'cancelled' ? 'selected' : '' %>>cancelled</option>
+      </select>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>Client</th>
+          <th>Style</th>
+          <th>Placement</th>
+          <th>Size</th>
+          <th>Budget</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (orders && orders.length > 0) { %>
+          <% const badgeClass = { pending: 'badge-warning', reviewing: 'badge-blue', quoted: 'badge-gold', confirmed: 'badge-green', 'in-progress': 'badge-blue', completed: 'badge-green', cancelled: 'badge-red' }; %>
+          <% orders.forEach(order => { %>
+            <tr>
+              <td><span style="color:var(--gold);font-weight:700"><%= order.orderNumber %></span></td>
+              <td>
+                <div style="font-weight:600;color:var(--text-primary);font-size:0.83rem"><%= order.clientName %></div>
+                <div style="font-size:0.72rem;color:var(--text-muted)"><%= order.clientEmail %></div>
+              </td>
+              <td><%= order.tattooStyle %></td>
+              <td><%= order.placement %></td>
+              <td><%= order.size %></td>
+              <td><%= order.budget || '—' %></td>
+              <td><span class="badge <%= badgeClass[order.status] || 'badge-gray' %>"><%= order.status %></span></td>
+              <td style="color:var(--text-muted);font-size:0.78rem"><%= new Date(order.createdAt).toLocaleDateString() %></td>
+              <td>
+                <button class="btn btn-secondary btn-sm btn-icon" data-view-order="<%= order._id %>" title="View & Edit">👁</button>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr><td colspan="9">
+            <div class="empty-state">
+              <div class="empty-icon">📋</div>
+              <div class="empty-title">No orders found</div>
+            </div>
+          </td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <% if (pages > 1) { %>
+    <div class="pagination">
+      <% for (let i = 1; i <= pages; i++) { %>
+        <a href="/admin/orders?page=<%= i %><%= status ? '&status='+status : '' %>"
+           class="page-btn <%= page === i ? 'active' : '' %>"><%= i %></a>
+      <% } %>
+    </div>
+  <% } %>
+</div>
+
+<!-- Order Detail Modal -->
+<div class="modal-backdrop" id="order-detail-modal">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-header">
+      <div class="modal-title">Order Details</div>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="order-detail-content"></div>
+
+      <!-- Update Form -->
+      <div style="margin-top:24px;padding-top:24px;border-top:1px solid var(--border-subtle)">
+        <div style="font-size:0.85rem;font-weight:700;margin-bottom:16px;color:var(--text-primary)">Update Order</div>
+        <form id="order-update-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <select name="status" class="form-control">
+                <option>pending</option>
+                <option>reviewing</option>
+                <option>quoted</option>
+                <option>confirmed</option>
+                <option>in-progress</option>
+                <option>completed</option>
+                <option>cancelled</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Quoted Price ($)</label>
+              <input type="number" name="quotedPrice" class="form-control" placeholder="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Appointment Date</label>
+              <input type="datetime-local" name="appointmentDate" class="form-control">
+            </div>
+            <div class="form-group form-full">
+              <label class="form-label">Admin Notes</label>
+              <textarea name="adminNotes" class="form-control" placeholder="Internal notes..."></textarea>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="margin-top:8px">Update Order</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Wire up order view buttons to set the form's order ID
+document.querySelectorAll('[data-view-order]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.viewOrder;
+    document.getElementById('order-update-form').dataset.orderId = id;
+  });
+});
+</script>

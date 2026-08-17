@@ -1,0 +1,225 @@
+<!-- Artists Management -->
+<div class="card" style="margin-bottom:24px">
+  <div class="card-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="card-title">All Artists</div>
+      <span class="badge badge-gold"><%= artists.length %> total</span>
+    </div>
+    <button class="btn btn-primary" data-open-modal="add-artist-modal">+ Add Artist</button>
+  </div>
+  <div class="table-wrap">
+    <table id="artists-table">
+      <thead>
+        <tr>
+          <th>Artist</th>
+          <th>Specialty</th>
+          <th>Experience</th>
+          <th>Rating</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (artists && artists.length > 0) { %>
+          <% artists.forEach(artist => { %>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <img src="<%= artist.image %>" alt="<%= artist.name %>" class="table-img">
+                  <div>
+                    <div style="font-weight:600;color:var(--text-primary);font-size:0.85rem"><%= artist.name %></div>
+                    <% if (artist.instagram) { %><div style="font-size:0.72rem;color:var(--text-muted)">@<%= artist.instagram %></div><% } %>
+                  </div>
+                </div>
+              </td>
+              <td><%= artist.specialty %></td>
+              <td><%= artist.experience %></td>
+              <td><span style="color:var(--gold)">★ <%= artist.rating %></span></td>
+              <td>
+                <span class="badge <%= artist.isActive ? 'badge-green' : 'badge-red' %>">
+                  <%= artist.isActive ? 'Active' : 'Inactive' %>
+                </span>
+              </td>
+              <td>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-secondary btn-sm btn-icon edit-artist"
+                    data-id="<%= artist._id %>"
+                    data-name="<%= artist.name %>"
+                    data-specialty="<%= artist.specialty %>"
+                    data-experience="<%= artist.experience %>"
+                    data-bio="<%= artist.bio || '' %>"
+                    data-instagram="<%= artist.instagram || '' %>"
+                    data-rating="<%= artist.rating %>"
+                    data-active="<%= artist.isActive %>"
+                    title="Edit">✏️</button>
+                  <button class="btn btn-danger-outline btn-sm btn-icon delete-artist"
+                    data-id="<%= artist._id %>" title="Delete">🗑</button>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr><td colspan="6">
+            <div class="empty-state">
+              <div class="empty-icon">👤</div>
+              <div class="empty-title">No artists yet</div>
+              <div class="empty-desc">Click "Add Artist" to get started</div>
+            </div>
+          </td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Artist Modal -->
+<div class="modal-backdrop" id="add-artist-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add New Artist</div>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="add-artist-form" enctype="multipart/form-data">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" name="name" class="form-control" placeholder="Artist name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Specialty *</label>
+            <input type="text" name="specialty" class="form-control" placeholder="e.g. Japanese, Fine Line" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Experience</label>
+            <input type="text" name="experience" class="form-control" placeholder="e.g. 5+ years">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Instagram Handle</label>
+            <input type="text" name="instagram" class="form-control" placeholder="@handle">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rating (1-5)</label>
+            <input type="number" name="rating" class="form-control" min="1" max="5" step="0.1" value="5.0">
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">Bio</label>
+            <textarea name="bio" class="form-control" placeholder="Artist bio..."></textarea>
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">Profile Photo</label>
+            <div class="file-drop">
+              <input type="file" name="image" accept="image/*">
+              <div class="file-drop-icon">📷</div>
+              <div class="file-drop-text">Drop photo or <strong>click to upload</strong></div>
+              <div class="file-preview"></div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary modal-close" data-close-modal>Cancel</button>
+      <button class="btn btn-primary" id="save-artist-btn">Save Artist</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Artist Modal -->
+<div class="modal-backdrop" id="edit-artist-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Edit Artist</div>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="edit-artist-form" enctype="multipart/form-data">
+        <input type="hidden" name="artistId" id="edit-artist-id">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" name="name" id="edit-artist-name" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Specialty *</label>
+            <input type="text" name="specialty" id="edit-artist-specialty" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Experience</label>
+            <input type="text" name="experience" id="edit-artist-experience" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Instagram</label>
+            <input type="text" name="instagram" id="edit-artist-instagram" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rating</label>
+            <input type="number" name="rating" id="edit-artist-rating" class="form-control" min="1" max="5" step="0.1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select name="isActive" id="edit-artist-active" class="form-control">
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">Bio</label>
+            <textarea name="bio" id="edit-artist-bio" class="form-control"></textarea>
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">New Photo (optional)</label>
+            <div class="file-drop">
+              <input type="file" name="image" accept="image/*">
+              <div class="file-drop-text">Drop or <strong>click to upload</strong></div>
+              <div class="file-preview"></div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Cancel</button>
+      <button class="btn btn-primary" id="update-artist-btn">Update Artist</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Add Artist
+document.getElementById('save-artist-btn').addEventListener('click', async () => {
+  const form = document.getElementById('add-artist-form');
+  const result = await submitForm(form, '/admin/artists', 'POST');
+  if (result.success) setTimeout(() => location.reload(), 800);
+});
+
+// Edit Artist - Fill form
+document.querySelectorAll('.edit-artist').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.getElementById('edit-artist-id').value = btn.dataset.id;
+    document.getElementById('edit-artist-name').value = btn.dataset.name;
+    document.getElementById('edit-artist-specialty').value = btn.dataset.specialty;
+    document.getElementById('edit-artist-experience').value = btn.dataset.experience;
+    document.getElementById('edit-artist-bio').value = btn.dataset.bio;
+    document.getElementById('edit-artist-instagram').value = btn.dataset.instagram;
+    document.getElementById('edit-artist-rating').value = btn.dataset.rating;
+    document.getElementById('edit-artist-active').value = btn.dataset.active;
+    openModal('edit-artist-modal');
+  });
+});
+
+// Update Artist
+document.getElementById('update-artist-btn').addEventListener('click', async () => {
+  const form = document.getElementById('edit-artist-form');
+  const id = document.getElementById('edit-artist-id').value;
+  const result = await submitForm(form, `/admin/artists/${id}`, 'PUT');
+  if (result.success) setTimeout(() => location.reload(), 800);
+});
+
+// Delete Artist
+document.querySelectorAll('.delete-artist').forEach(btn => {
+  btn.addEventListener('click', () => {
+    confirmDelete(`/admin/artists/${btn.dataset.id}`, () => btn.closest('tr').remove());
+  });
+});
+</script>

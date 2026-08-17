@@ -1,0 +1,81 @@
+<!-- Pricing Management -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Pricing Plans</div>
+    <button class="btn btn-primary" data-open-modal="add-plan-modal">+ Add Plan</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:24px">
+    <% if (plans && plans.length > 0) { %>
+      <% plans.forEach(plan => { %>
+        <div style="background:var(--bg-elevated);border:1px solid <%= plan.isPopular ? 'var(--gold)' : 'var(--border-subtle)' %>;border-radius:var(--radius);padding:24px;position:relative">
+          <% if (plan.isPopular) { %>
+            <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:#0a0a0a;font-size:0.65rem;font-weight:800;padding:4px 14px;border-radius:99px;letter-spacing:0.1em;text-transform:uppercase;">Popular</span>
+          <% } %>
+          <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:8px"><%= plan.name %></div>
+          <div style="font-size:2.5rem;font-weight:900;letter-spacing:-0.04em;margin-bottom:4px">$<%= plan.price %><span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">/<%= plan.period %></span></div>
+          <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:16px"><%= plan.description || '' %></div>
+          <ul style="margin-bottom:20px">
+            <% (plan.features || []).forEach(f => { %>
+              <li style="font-size:0.78rem;color:var(--text-secondary);padding:5px 0;display:flex;align-items:center;gap:6px"><span style="color:var(--gold)">✓</span> <%= f %></li>
+            <% }); %>
+          </ul>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-danger-outline btn-sm" onclick="confirmDelete('/admin/pricing/<%= plan._id %>', () => location.reload())">Delete</button>
+            <span class="badge <%= plan.isActive ? 'badge-green' : 'badge-red' %>"><%= plan.isActive ? 'Active' : 'Hidden' %></span>
+          </div>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <div style="grid-column:1/-1">
+        <div class="empty-state"><div class="empty-icon">💳</div><div class="empty-title">No pricing plans</div></div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Add Plan Modal -->
+<div class="modal-backdrop" id="add-plan-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Add Pricing Plan</div><button class="modal-close">✕</button></div>
+    <div class="modal-body">
+      <form id="add-plan-form">
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Plan Name *</label>
+            <input type="text" name="name" class="form-control" placeholder="e.g. Starter, Premium" required></div>
+          <div class="form-group"><label class="form-label">Price ($) *</label>
+            <input type="number" name="price" class="form-control" required></div>
+          <div class="form-group"><label class="form-label">Period</label>
+            <input type="text" name="period" class="form-control" value="session" placeholder="session, month, etc."></div>
+          <div class="form-group"><label class="form-label">CTA Button Text</label>
+            <input type="text" name="ctaText" class="form-control" value="Book Now"></div>
+          <div class="form-group"><label class="form-label">Is Popular?</label>
+            <select name="isPopular" class="form-control"><option value="false">No</option><option value="true">Yes (Highlighted)</option></select></div>
+        </div>
+        <div class="form-group"><label class="form-label">Description</label>
+          <input type="text" name="description" class="form-control" placeholder="Brief plan description"></div>
+        <div class="form-group"><label class="form-label">Features (one per line)</label>
+          <textarea name="features" class="form-control" placeholder="1 design concept&#10;Up to 2 revisions&#10;Standard placement"></textarea>
+          <div class="form-hint">Each line becomes a separate feature bullet point</div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Cancel</button>
+      <button class="btn btn-primary" id="save-plan-btn">Add Plan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('save-plan-btn').addEventListener('click', async () => {
+  const form = document.getElementById('add-plan-form');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  try {
+    const res = await fetch('/admin/pricing', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    const result = await res.json();
+    if (result.success) { showToast(result.message, 'success'); setTimeout(() => location.reload(), 800); }
+    else showToast(result.message, 'error');
+  } catch { showToast('Error', 'error'); }
+});
+</script>

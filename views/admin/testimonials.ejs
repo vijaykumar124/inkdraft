@@ -1,0 +1,97 @@
+<!-- Testimonials Management -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Testimonials</div>
+    <button class="btn btn-primary" data-open-modal="add-testimonial-modal">+ Add Testimonial</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Client</th><th>Rating</th><th>Review</th><th>Style</th><th>Approved</th><th>Featured</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        <% if (testimonials && testimonials.length > 0) { %>
+          <% testimonials.forEach(t => { %>
+            <tr>
+              <td style="font-weight:600;color:var(--text-primary)"><%= t.name %><br><span style="font-size:0.72rem;color:var(--text-muted)"><%= t.location || '' %></span></td>
+              <td><span style="color:var(--gold)"><%= '★'.repeat(t.rating || 5) %></span></td>
+              <td style="max-width:200px;font-size:0.78rem;color:var(--text-secondary)"><%= t.review.substring(0, 80) %>...</td>
+              <td><%= t.tattooStyle || '—' %></td>
+              <td><span class="badge <%= t.isApproved ? 'badge-green' : 'badge-warning' %>"><%= t.isApproved ? 'Approved' : 'Pending' %></span></td>
+              <td><span class="badge <%= t.isFeatured ? 'badge-gold' : 'badge-gray' %>"><%= t.isFeatured ? '★ Yes' : 'No' %></span></td>
+              <td>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-secondary btn-sm approve-btn" data-id="<%= t._id %>" data-approved="<%= t.isApproved %>">
+                    <%= t.isApproved ? 'Unapprove' : 'Approve' %>
+                  </button>
+                  <button class="btn btn-danger-outline btn-sm btn-icon delete-testimonial" data-id="<%= t._id %>">🗑</button>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">⭐</div><div class="empty-title">No testimonials</div></div></td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Testimonial Modal -->
+<div class="modal-backdrop" id="add-testimonial-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Add Testimonial</div><button class="modal-close">✕</button></div>
+    <div class="modal-body">
+      <form id="add-testimonial-form" enctype="multipart/form-data">
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Client Name *</label>
+            <input type="text" name="name" class="form-control" required></div>
+          <div class="form-group"><label class="form-label">Location</label>
+            <input type="text" name="location" class="form-control" placeholder="City, State"></div>
+          <div class="form-group"><label class="form-label">Rating *</label>
+            <select name="rating" class="form-control" required>
+              <option value="5">★★★★★ (5)</option>
+              <option value="4">★★★★ (4)</option>
+              <option value="3">★★★ (3)</option>
+            </select></div>
+          <div class="form-group"><label class="form-label">Tattoo Style</label>
+            <input type="text" name="tattooStyle" class="form-control" placeholder="e.g. Japanese"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Review *</label>
+          <textarea name="review" class="form-control" required placeholder="Client review..."></textarea></div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Approved</label>
+            <select name="isApproved" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></div>
+          <div class="form-group"><label class="form-label">Featured on Homepage</label>
+            <select name="isFeatured" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Cancel</button>
+      <button class="btn btn-primary" id="save-testimonial-btn">Save Testimonial</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('save-testimonial-btn').addEventListener('click', async () => {
+  const result = await submitForm(document.getElementById('add-testimonial-form'), '/admin/testimonials', 'POST');
+  if (result.success) setTimeout(() => location.reload(), 800);
+});
+document.querySelectorAll('.delete-testimonial').forEach(btn => {
+  btn.addEventListener('click', () => confirmDelete(`/admin/testimonials/${btn.dataset.id}`, () => btn.closest('tr').remove()));
+});
+document.querySelectorAll('.approve-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const isApproved = btn.dataset.approved === 'true';
+    const res = await fetch(`/admin/testimonials/${btn.dataset.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isApproved: !isApproved })
+    });
+    const data = await res.json();
+    if (data.success) { showToast('Updated!', 'success'); setTimeout(() => location.reload(), 600); }
+  });
+});
+</script>
