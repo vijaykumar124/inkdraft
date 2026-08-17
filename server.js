@@ -55,7 +55,9 @@ app.use((req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+
+// On Vercel, the app is handled as a serverless function — don't call listen()
+if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`\n🚀 InkDraft running → http://localhost:${PORT}`);
     console.log(`📊 Admin panel  → http://localhost:${PORT}/admin/login`);
