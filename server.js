@@ -11,10 +11,14 @@ const mongoose = require('mongoose');
 
 const app = express();
 
-// ── Connect MongoDB Atlas ─────────────────────────────────
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ MongoDB Atlas Connected!'))
-  .catch(err => console.error('❌ MongoDB Error:', err.message));
+// ── Connect MongoDB Atlas (graceful — don't crash if env is missing) ──
+if (process.env.MONGODB_URI) {
+  mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('✅ MongoDB Atlas Connected!'))
+    .catch(err => console.error('❌ MongoDB Error:', err.message));
+} else {
+  console.warn('⚠️  MONGODB_URI not set — database features disabled');
+}
 
 // View Engine
 app.set('view engine', 'ejs');
@@ -28,7 +32,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(morgan('dev'));
+if (process.env.NODE_ENV !== 'production') {
+  app.use(morgan('dev'));
+}
 app.use(fileUpload({ limits: { fileSize: 10 * 1024 * 1024 }, createParentPath: true }));
 app.use(session({
   secret: process.env.SESSION_SECRET || 'inkdraft_secret',
@@ -45,6 +51,20 @@ app.use((req, res, next) => {
   next();
 });
 
+// Health check (for debugging Vercel)
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    env: {
+      MONGODB_URI: process.env.MONGODB_URI ? '✅ set' : '❌ missing',
+      NODE_ENV: process.env.NODE_ENV || 'not set',
+      VERCEL: process.env.VERCEL || 'not set'
+    },
+    views: path.join(__dirname, 'views'),
+    dirname: __dirname
+  });
+});
+
 // Routes
 app.use('/', require('./routes/index'));
 app.use('/admin', require('./routes/admin'));
@@ -52,6 +72,12 @@ app.use('/admin', require('./routes/admin'));
 // 404
 app.use((req, res) => {
   res.status(404).render('error', { title: '404', message: 'Page not found', layout: 'layouts/main' });
+});
+
+// Error handler (catch crashes and show JSON instead of Vercel 500)
+app.use((err, req, res, next) => {
+  console.error('💥 Server Error:', err.stack);
+  res.status(500).json({ error: err.message, stack: process.env.NODE_ENV === 'production' ? undefined : err.stack });
 });
 
 const PORT = process.env.PORT || 3000;
