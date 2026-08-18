@@ -63,7 +63,10 @@ export default function Navbar({ theme, onToggleTheme, user, onOpenAuth, onLogou
               )}
             </div>
           ) : (
-            <button className="r-nav-login-btn" onClick={onOpenAuth}>Login / Register</button>
+            <button className="r-nav-login-btn" onClick={onOpenAuth}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4, verticalAlign: -1 }}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Login
+            </button>
           )}
 
           <a href="#order-form" className="r-nav-cta-btn">Book Session</a>
