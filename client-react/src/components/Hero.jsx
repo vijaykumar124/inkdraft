@@ -46,7 +46,12 @@ export default function Hero({ settings }) {
         <div className="r-hero-visual">
           <div className="r-visual-glow"></div>
           <div className="r-visual-frame">
-            <img src={heroImage} alt="Master Tattoo Artist InkDraft Studio" className="r-hero-img" />
+            <img
+              src={heroImage}
+              alt="Master Tattoo Artist InkDraft Studio"
+              className="r-hero-img"
+              onError={e => e.target.src = 'https://images.unsplash.com/photo-1604836454547-28b7a2317d0e?w=1200&q=80'}
+            />
             <div className="r-visual-overlay"></div>
             <div className="r-visual-tag">
               <div className="r-tag-icon">🖋</div>

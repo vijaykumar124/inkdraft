@@ -407,8 +407,10 @@ body.day-mode .r-navbar.scrolled {
 }
 @media (max-width: 768px) {
   .r-hero-grid { grid-template-columns: 1fr; }
-  .r-hero-visual { display: none; }
-  .r-nav-links, .r-nav-login-btn { display: none; }
+  .r-hero-visual { display: block; margin-top: 28px; width: 100%; }
+  .r-hero-img { height: 280px; object-fit: cover; }
+  .r-nav-links { display: none; }
+  .r-nav-login-btn { display: inline-flex; font-size: 0.78rem; padding: 5px 12px; }
   .r-hamburger-btn { display: flex; }
   .r-categories-grid, .r-portfolio-grid, .r-artists-grid, .r-testimonials-grid, .r-pricing-grid, .r-process-grid { grid-template-columns: 1fr; }
   .r-pricing-card.popular { transform: none; }

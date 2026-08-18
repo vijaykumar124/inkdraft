@@ -700,11 +700,13 @@ footer {
   .container { padding: 0 20px; }
   .section { padding: 72px 0; }
 
-  .nav-links, .nav-login { display: none; }
+  .nav-links { display: none; }
+  .nav-login { font-size: 0.78rem; padding: 5px 12px; }
   .nav-hamburger { display: flex; }
 
-  #hero { grid-template-columns: 1fr; padding-top: 120px; }
-  .hero-visual { display: none; }
+  #hero { grid-template-columns: 1fr; padding-top: 110px; text-align: left; }
+  .hero-visual { display: block; margin-top: 28px; width: 100%; }
+  .hero-img { height: 280px; object-fit: cover; }
   .hero-title { font-size: clamp(2.2rem, 8vw, 3.5rem); }
   .hero-stats { gap: 28px; }
 
