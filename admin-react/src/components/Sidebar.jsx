@@ -3,19 +3,19 @@ import { useAuth } from '../hooks/useAuth';
 
 const navItems = [
   { section: 'Main', items: [
-    { to: '/admin-panel/dashboard', icon: '📊', label: 'Dashboard' },
-    { to: '/admin-panel/orders', icon: '📋', label: 'Orders' },
-    { to: '/admin-panel/users', icon: '👥', label: 'Users' },
+    { to: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
+    { to: '/admin/orders', icon: '📋', label: 'Orders' },
+    { to: '/admin/users', icon: '👥', label: 'Users' },
   ]},
   { section: 'Content', items: [
-    { to: '/admin-panel/artists', icon: '👤', label: 'Artists' },
-    { to: '/admin-panel/designs', icon: '🎨', label: 'Designs' },
-    { to: '/admin-panel/categories', icon: '📁', label: 'Categories' },
-    { to: '/admin-panel/testimonials', icon: '⭐', label: 'Testimonials' },
+    { to: '/admin/artists', icon: '👤', label: 'Artists' },
+    { to: '/admin/designs', icon: '🎨', label: 'Designs' },
+    { to: '/admin/categories', icon: '📁', label: 'Categories' },
+    { to: '/admin/testimonials', icon: '⭐', label: 'Testimonials' },
   ]},
   { section: 'Business', items: [
-    { to: '/admin-panel/pricing', icon: '💳', label: 'Pricing Plans' },
-    { to: '/admin-panel/settings', icon: '⚙️', label: 'Settings' },
+    { to: '/admin/pricing', icon: '💳', label: 'Pricing Plans' },
+    { to: '/admin/settings', icon: '⚙️', label: 'Settings' },
   ]},
 ];
 
@@ -25,7 +25,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }) {
 
   const handleLogout = () => {
     logout();
-    navigate('/admin-panel/login');
+    navigate('/admin/login');
   };
 
   return (

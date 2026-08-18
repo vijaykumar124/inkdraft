@@ -25,7 +25,7 @@ async function request(method, endpoint, data = null, isFormData = false) {
   if (!res.ok && res.status === 401) {
     localStorage.removeItem('inkdraft_admin_token');
     localStorage.removeItem('inkdraft_admin_user');
-    window.location.href = '/admin-panel/login';
+    window.location.href = '/admin/login';
     return;
   }
   return json;

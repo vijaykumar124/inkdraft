@@ -17,7 +17,7 @@ export default function Login() {
     const res = await login(email, password);
     setLoading(false);
     if (res.success) {
-      navigate('/admin-panel/dashboard');
+      navigate('/admin/dashboard');
     } else {
       showToast(res.message || 'Login failed', 'error');
     }

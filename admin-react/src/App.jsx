@@ -15,13 +15,13 @@ import Users from './pages/Users';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth();
-  if (!isAuthenticated) return <Navigate to="/admin-panel/login" replace />;
+  if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
   return children;
 }
 
 function PublicRoute({ children }) {
   const { isAuthenticated } = useAuth();
-  if (isAuthenticated) return <Navigate to="/admin-panel/dashboard" replace />;
+  if (isAuthenticated) return <Navigate to="/admin/dashboard" replace />;
   return children;
 }
 
@@ -31,13 +31,13 @@ export default function App() {
       <AuthProvider>
         <ToastProvider>
           <Routes>
-            <Route path="/admin-panel/login" element={
+            <Route path="/admin/login" element={
               <PublicRoute><Login /></PublicRoute>
             } />
-            <Route path="/admin-panel" element={
+            <Route path="/admin" element={
               <ProtectedRoute><AdminLayout /></ProtectedRoute>
             }>
-              <Route index element={<Navigate to="/admin-panel/dashboard" replace />} />
+              <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="artists" element={<Artists />} />
               <Route path="designs" element={<Designs />} />
@@ -49,7 +49,7 @@ export default function App() {
               <Route path="settings" element={<Settings />} />
             </Route>
             {/* Fallback */}
-            <Route path="*" element={<Navigate to="/admin-panel/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
           </Routes>
         </ToastProvider>
       </AuthProvider>

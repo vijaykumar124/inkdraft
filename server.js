@@ -23,17 +23,14 @@ app.use(expressLayouts);
 // Static Files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve React Admin build at /admin-panel
+// Serve React Admin build at /admin
 const reactAdminBuildPath = path.join(__dirname, 'admin-react/dist');
 const fs = require('fs');
 if (fs.existsSync(reactAdminBuildPath)) {
-  app.use('/admin-panel', express.static(reactAdminBuildPath));
-  app.get('/admin-panel/*', (req, res) => {
-    res.sendFile(path.join(reactAdminBuildPath, 'index.html'));
-  });
+  app.use('/admin', express.static(reactAdminBuildPath));
 }
 
-// Serve React Public Website build at /react and /
+// Serve React Public Website build at /react
 const reactClientBuildPath = path.join(__dirname, 'client-react/dist');
 if (fs.existsSync(reactClientBuildPath)) {
   app.use('/react', express.static(reactClientBuildPath));
@@ -69,7 +66,7 @@ app.use((req, res, next) => {
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');
   res.send(
-    `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /admin/*\nDisallow: /admin-panel\nDisallow: /admin-panel/*\nDisallow: /health\n\nSitemap: https://${req.hostname}/sitemap.xml`
+    `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /admin/*\nDisallow: /health\n\nSitemap: https://${req.hostname}/sitemap.xml`
   );
 });
 
@@ -102,11 +99,24 @@ app.get('/health', (req, res) => {
 });
 
 // ── Routes ────────────────────────────────────────────────
-app.use('/api/public', require('./routes/publicApi'));  // Public API for React client
-app.use('/api/user', require('./routes/userAuth'));     // User Signup / Login API
+app.use('/api/public', require('./routes/publicApi'));    // Public API for React client
+app.use('/api/user', require('./routes/userAuth'));       // User Signup / Login API
+app.use('/admin/api', require('./routes/adminApi'));       // React Admin REST API
+app.use('/admin-classic', require('./routes/admin'));     // Classic EJS admin backup
+
+// Direct /admin and /admin/ to /admin/login
+app.get(['/admin', '/admin/'], (req, res) => {
+  res.redirect('/admin/login');
+});
+
+// React Admin SPA route (handles /admin/login, /admin/dashboard, etc.)
+if (fs.existsSync(reactAdminBuildPath)) {
+  app.get('/admin*', (req, res) => {
+    res.sendFile(path.join(reactAdminBuildPath, 'index.html'));
+  });
+}
+
 app.use('/', require('./routes/index'));
-app.use('/admin/api', require('./routes/adminApi'));     // React API (JSON, Bearer token)
-app.use('/admin', require('./routes/admin'));             // EJS admin (session-based)
 
 // ── 404 ───────────────────────────────────────────────────
 app.use((req, res) => {

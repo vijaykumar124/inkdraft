@@ -54,7 +54,7 @@ export default function Dashboard() {
       <div className="r-card">
         <div className="r-card-header">
           <div className="r-card-title">Recent Orders</div>
-          <a href="/admin-panel/orders" className="r-btn r-btn-sm r-btn-secondary">View All</a>
+          <a href="/admin/orders" className="r-btn r-btn-sm r-btn-secondary">View All</a>
         </div>
         <div className="r-table-wrap">
           <table className="r-table">
