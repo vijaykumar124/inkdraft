@@ -23,13 +23,22 @@ app.use(expressLayouts);
 // Static Files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve React Admin build at /admin-panel (if built)
-const reactBuildPath = path.join(__dirname, 'admin-react/dist');
+// Serve React Admin build at /admin-panel
+const reactAdminBuildPath = path.join(__dirname, 'admin-react/dist');
 const fs = require('fs');
-if (fs.existsSync(reactBuildPath)) {
-  app.use('/admin-panel', express.static(reactBuildPath));
+if (fs.existsSync(reactAdminBuildPath)) {
+  app.use('/admin-panel', express.static(reactAdminBuildPath));
   app.get('/admin-panel/*', (req, res) => {
-    res.sendFile(path.join(reactBuildPath, 'index.html'));
+    res.sendFile(path.join(reactAdminBuildPath, 'index.html'));
+  });
+}
+
+// Serve React Public Website build at /react and /
+const reactClientBuildPath = path.join(__dirname, 'client-react/dist');
+if (fs.existsSync(reactClientBuildPath)) {
+  app.use('/react', express.static(reactClientBuildPath));
+  app.get('/react/*', (req, res) => {
+    res.sendFile(path.join(reactClientBuildPath, 'index.html'));
   });
 }
 
@@ -93,10 +102,11 @@ app.get('/health', (req, res) => {
 });
 
 // ── Routes ────────────────────────────────────────────────
-app.use('/api/user', require('./routes/userAuth'));  // User Signup / Login API
+app.use('/api/public', require('./routes/publicApi'));  // Public API for React client
+app.use('/api/user', require('./routes/userAuth'));     // User Signup / Login API
 app.use('/', require('./routes/index'));
-app.use('/admin/api', require('./routes/adminApi'));  // React API (JSON, Bearer token)
-app.use('/admin', require('./routes/admin'));          // EJS admin (session-based)
+app.use('/admin/api', require('./routes/adminApi'));     // React API (JSON, Bearer token)
+app.use('/admin', require('./routes/admin'));             // EJS admin (session-based)
 
 // ── 404 ───────────────────────────────────────────────────
 app.use((req, res) => {
