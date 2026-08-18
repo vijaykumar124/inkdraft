@@ -69,9 +69,13 @@
 </div>
 
 <script>
-document.getElementById('save-cat-btn').addEventListener('click', async () => {
-  const result = await submitForm(document.getElementById('add-cat-form'), '/admin/categories', 'POST');
-  if (result.success) setTimeout(() => location.reload(), 800);
+document.getElementById('save-cat-btn').addEventListener('click', async (e) => {
+  const btn = e.currentTarget;
+  const result = await submitForm(document.getElementById('add-cat-form'), '/admin/categories', 'POST', btn);
+  if (result.success) {
+    closeModal('add-cat-modal');
+    setTimeout(() => location.reload(), 600);
+  }
 });
 document.querySelectorAll('.delete-cat').forEach(btn => {
   btn.addEventListener('click', () => confirmDelete(`/admin/categories/${btn.dataset.id}`, () => btn.closest('tr').remove()));

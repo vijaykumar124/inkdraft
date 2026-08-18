@@ -1,6 +1,7 @@
 /* ============================================================
    InkDraft Admin Panel — JavaScript
    CRUD operations, modals, file uploads, toasts
+   FIXED: Modal close, ESC key, button loading states
    ============================================================ */
 
 'use strict';
@@ -33,67 +34,107 @@ function showToast(message, type = 'success') {
   }, 3500);
 }
 
-// ── Modal ─────────────────────────────────────────────────
+// ── Modal System (Fixed) ──────────────────────────────────
+// Track currently open modal for ESC handling
+let _currentOpenModal = null;
+
 function openModal(id) {
   const backdrop = document.getElementById(id);
-  if (backdrop) {
-    backdrop.classList.add('open');
-    document.body.style.overflow = 'hidden';
+  if (!backdrop) return;
+  // Close any currently open modal first
+  if (_currentOpenModal && _currentOpenModal !== id) {
+    closeModal(_currentOpenModal);
   }
+  backdrop.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  _currentOpenModal = id;
 }
+
 function closeModal(id) {
-  const backdrop = document.getElementById(id);
-  if (backdrop) {
-    backdrop.classList.remove('open');
-    document.body.style.overflow = '';
-  }
+  const backdrop = id ? document.getElementById(id) : null;
+  if (!backdrop) return;
+  backdrop.classList.remove('open');
+  document.body.style.overflow = '';
+  if (_currentOpenModal === id) _currentOpenModal = null;
 }
-document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
-  backdrop.addEventListener('click', (e) => {
-    if (e.target === backdrop) closeModal(backdrop.id);
+
+function closeAllModals() {
+  document.querySelectorAll('.modal-backdrop.open').forEach(m => {
+    m.classList.remove('open');
   });
+  document.body.style.overflow = '';
+  _currentOpenModal = null;
+}
+
+// ESC key support
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && _currentOpenModal) {
+    closeModal(_currentOpenModal);
+  }
 });
-document.querySelectorAll('.modal-close, [data-close-modal]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const modal = btn.closest('.modal-backdrop');
-    if (modal) closeModal(modal.id);
-  });
+
+// Backdrop click (outside modal box) — use event delegation
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('modal-backdrop') && e.target.classList.contains('open')) {
+    closeModal(e.target.id);
+  }
 });
-document.querySelectorAll('[data-open-modal]').forEach(btn => {
-  btn.addEventListener('click', () => openModal(btn.dataset.openModal));
+
+// Close button delegation (handles dynamically added modals too)
+document.addEventListener('click', (e) => {
+  const closeBtn = e.target.closest('.modal-close, [data-close-modal]');
+  if (!closeBtn) return;
+  const modal = closeBtn.closest('.modal-backdrop');
+  if (modal) {
+    e.stopPropagation();
+    closeModal(modal.id);
+  }
+});
+
+// Open button delegation
+document.addEventListener('click', (e) => {
+  const openBtn = e.target.closest('[data-open-modal]');
+  if (!openBtn) return;
+  openModal(openBtn.dataset.openModal);
 });
 
 // ── Image Preview ─────────────────────────────────────────
-document.querySelectorAll('input[type="file"]').forEach(input => {
-  input.addEventListener('change', (e) => {
-    const preview = input.closest('.file-drop')?.querySelector('.file-preview');
-    if (!preview) return;
-    preview.innerHTML = '';
-    Array.from(e.target.files).forEach(file => {
-      if (!file.type.startsWith('image/')) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const img = document.createElement('img');
-        img.src = reader.result;
-        preview.appendChild(img);
-      };
-      reader.readAsDataURL(file);
-    });
+document.addEventListener('change', (e) => {
+  if (e.target.type !== 'file') return;
+  const input = e.target;
+  const preview = input.closest('.file-drop')?.querySelector('.file-preview');
+  if (!preview) return;
+  preview.innerHTML = '';
+  Array.from(input.files).forEach(file => {
+    if (!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = document.createElement('img');
+      img.src = reader.result;
+      preview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
   });
 });
 
-// ── AJAX Form Submit ──────────────────────────────────────
-async function submitForm(form, url, method = 'POST') {
-  const btn = form.querySelector('[type="submit"]');
+// ── AJAX Form Submit (Fixed button disable) ───────────────
+// saveBtnEl: explicitly pass the trigger button since it's often outside <form>
+async function submitForm(form, url, method = 'POST', saveBtnEl = null) {
+  // Find trigger button — either passed explicitly or inside the form
+  const btn = saveBtnEl || form.querySelector('button[type="submit"], button.btn-primary');
   const original = btn?.innerHTML;
-  if (btn) { btn.innerHTML = '<span>Saving...</span>'; btn.disabled = true; }
+
+  if (btn) {
+    btn.innerHTML = '<span class="spinner"></span> Saving...';
+    btn.disabled = true;
+  }
 
   try {
     const formData = new FormData(form);
     const res = await fetch(url, { method, body: formData });
     const data = await res.json();
     if (data.success) {
-      showToast(data.message, 'success');
+      showToast(data.message || 'Saved successfully', 'success');
       return { success: true, data };
     } else {
       showToast(data.message || 'Error occurred', 'error');
@@ -103,7 +144,10 @@ async function submitForm(form, url, method = 'POST') {
     showToast('Network error. Please try again.', 'error');
     return { success: false };
   } finally {
-    if (btn) { btn.innerHTML = original; btn.disabled = false; }
+    if (btn) {
+      btn.innerHTML = original;
+      btn.disabled = false;
+    }
   }
 }
 

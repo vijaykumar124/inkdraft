@@ -8,10 +8,9 @@ const morgan = require('morgan');
 const fileUpload = require('express-fileupload');
 const path = require('path');
 const mongoose = require('mongoose');
+const connectDb = require('./config/connectDb');
 
 const app = express();
-
-const connectDb = require('./config/connectDb');
 
 // ── Connect MongoDB Atlas ─────────────────────────────────
 connectDb();
@@ -23,6 +22,16 @@ app.use(expressLayouts);
 
 // Static Files
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve React Admin build at /admin-panel (if built)
+const reactBuildPath = path.join(__dirname, '../admin-react/dist');
+const fs = require('fs');
+if (fs.existsSync(reactBuildPath)) {
+  app.use('/admin-panel', express.static(reactBuildPath));
+  app.get('/admin-panel/*', (req, res) => {
+    res.sendFile(path.join(reactBuildPath, 'index.html'));
+  });
+}
 
 // Middleware
 app.use(express.json());
@@ -47,7 +56,31 @@ app.use((req, res, next) => {
   next();
 });
 
-// Health check (for debugging Vercel)
+// ── SEO Files ─────────────────────────────────────────────
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain');
+  res.send(
+    `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /admin/*\nDisallow: /admin-panel\nDisallow: /admin-panel/*\nDisallow: /health\n\nSitemap: https://${req.hostname}/sitemap.xml`
+  );
+});
+
+app.get('/sitemap.xml', (req, res) => {
+  const baseUrl = `https://${req.hostname}`;
+  const today = new Date().toISOString().split('T')[0];
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>`;
+  res.type('application/xml');
+  res.send(sitemap);
+});
+
+// Health check
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -55,25 +88,27 @@ app.get('/health', (req, res) => {
       MONGODB_URI: process.env.MONGODB_URI ? '✅ set' : '❌ missing',
       NODE_ENV: process.env.NODE_ENV || 'not set',
       VERCEL: process.env.VERCEL || 'not set'
-    },
-    views: path.join(__dirname, 'views'),
-    dirname: __dirname
+    }
   });
 });
 
-// Routes
+// ── Routes ────────────────────────────────────────────────
 app.use('/', require('./routes/index'));
-app.use('/admin', require('./routes/admin'));
+app.use('/admin/api', require('./routes/adminApi'));  // React API (JSON, Bearer token)
+app.use('/admin', require('./routes/admin'));          // EJS admin (session-based)
 
-// 404
+// ── 404 ───────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).render('error', { title: '404', message: 'Page not found', layout: 'layouts/main' });
 });
 
-// Error handler (catch crashes and show JSON instead of Vercel 500)
+// ── Error Handler ─────────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error('💥 Server Error:', err.stack);
-  res.status(500).json({ error: err.message, stack: process.env.NODE_ENV === 'production' ? undefined : err.stack });
+  if (req.xhr || req.headers.accept?.includes('application/json')) {
+    return res.status(500).json({ error: err.message });
+  }
+  res.status(500).render('error', { title: 'Error', message: 'Something went wrong', layout: 'layouts/main' });
 });
 
 const PORT = process.env.PORT || 3000;
@@ -83,6 +118,7 @@ if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`\n🚀 InkDraft running → http://localhost:${PORT}`);
     console.log(`📊 Admin panel  → http://localhost:${PORT}/admin/login`);
+    console.log(`⚛️  React admin → http://localhost:${PORT}/admin-panel`);
     console.log(`🔑 admin@inkdraft.com / admin123\n`);
   });
 }

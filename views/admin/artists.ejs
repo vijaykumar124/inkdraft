@@ -187,10 +187,14 @@
 
 <script>
 // Add Artist
-document.getElementById('save-artist-btn').addEventListener('click', async () => {
+document.getElementById('save-artist-btn').addEventListener('click', async (e) => {
+  const btn = e.currentTarget;
   const form = document.getElementById('add-artist-form');
-  const result = await submitForm(form, '/admin/artists', 'POST');
-  if (result.success) setTimeout(() => location.reload(), 800);
+  const result = await submitForm(form, '/admin/artists', 'POST', btn);
+  if (result.success) {
+    closeModal('add-artist-modal');
+    setTimeout(() => location.reload(), 600);
+  }
 });
 
 // Edit Artist - Fill form
@@ -209,11 +213,15 @@ document.querySelectorAll('.edit-artist').forEach(btn => {
 });
 
 // Update Artist
-document.getElementById('update-artist-btn').addEventListener('click', async () => {
+document.getElementById('update-artist-btn').addEventListener('click', async (e) => {
+  const btn = e.currentTarget;
   const form = document.getElementById('edit-artist-form');
   const id = document.getElementById('edit-artist-id').value;
-  const result = await submitForm(form, `/admin/artists/${id}`, 'PUT');
-  if (result.success) setTimeout(() => location.reload(), 800);
+  const result = await submitForm(form, `/admin/artists/${id}`, 'PUT', btn);
+  if (result.success) {
+    closeModal('edit-artist-modal');
+    setTimeout(() => location.reload(), 600);
+  }
 });
 
 // Delete Artist

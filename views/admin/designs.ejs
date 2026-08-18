@@ -124,10 +124,14 @@
 </div>
 
 <script>
-document.getElementById('save-design-btn').addEventListener('click', async () => {
+document.getElementById('save-design-btn').addEventListener('click', async (e) => {
+  const btn = e.currentTarget;
   const form = document.getElementById('add-design-form');
-  const result = await submitForm(form, '/admin/designs', 'POST');
-  if (result.success) setTimeout(() => location.reload(), 800);
+  const result = await submitForm(form, '/admin/designs', 'POST', btn);
+  if (result.success) {
+    closeModal('add-design-modal');
+    setTimeout(() => location.reload(), 600);
+  }
 });
 document.querySelectorAll('.delete-design').forEach(btn => {
   btn.addEventListener('click', () => confirmDelete(`/admin/designs/${btn.dataset.id}`, () => btn.closest('tr').remove()));

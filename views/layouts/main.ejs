@@ -3,14 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'InkDraft - Premium Tattoo Studio with world-class artists' %>">
-  <title><%= typeof title !== 'undefined' ? title : 'InkDraft' %></title>
+
+  <!-- ── Primary Meta ─────────────────────────────────── -->
+  <title><%= typeof title !== 'undefined' ? title : 'InkDraft - Premium Tattoo Studio' %></title>
+  <meta name="description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'InkDraft - Premium tattoo studio with world-class artists. Book your custom tattoo design session today.' %>">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="author" content="InkDraft Studio">
+  <link rel="canonical" href="https://inkdraft-mu.vercel.app<%= typeof canonicalPath !== 'undefined' ? canonicalPath : '/' %>">
+
+  <!-- ── Open Graph (Facebook, LinkedIn, WhatsApp) ─────── -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="<%= typeof title !== 'undefined' ? title : 'InkDraft - Premium Tattoo Studio' %>">
+  <meta property="og:description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'Premium tattoo studio with world-class artists. Book your custom design today.' %>">
+  <meta property="og:url" content="https://inkdraft-mu.vercel.app<%= typeof canonicalPath !== 'undefined' ? canonicalPath : '/' %>">
+  <meta property="og:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : 'https://images.unsplash.com/photo-1604836454547-28b7a2317d0e?w=1200&q=80' %>">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="InkDraft Premium Tattoo Studio">
+  <meta property="og:site_name" content="InkDraft">
+  <meta property="og:locale" content="en_US">
+
+  <!-- ── Twitter / X Card ──────────────────────────────── -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title : 'InkDraft - Premium Tattoo Studio' %>">
+  <meta name="twitter:description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'Premium tattoo studio with world-class artists.' %>">
+  <meta name="twitter:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : 'https://images.unsplash.com/photo-1604836454547-28b7a2317d0e?w=1200&q=80' %>">
+
+  <!-- ── Fonts ──────────────────────────────────────────── -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+
+  <!-- ── CSS ───────────────────────────────────────────── -->
   <link rel="stylesheet" href="/css/main.css">
+
+  <!-- ── Favicon ───────────────────────────────────────── -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖋</text></svg>">
 
-  <!-- Apply saved theme BEFORE paint to avoid flash -->
+  <!-- ── JSON-LD Structured Data ───────────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://inkdraft-mu.vercel.app/#organization",
+        "name": "InkDraft Studio",
+        "url": "https://inkdraft-mu.vercel.app",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://images.unsplash.com/photo-1604836454547-28b7a2317d0e?w=400&q=80"
+        },
+        "description": "Premium tattoo studio with world-class artists specializing in custom designs.",
+        "sameAs": [
+          "https://instagram.com/inkdraft",
+          "https://facebook.com/inkdraft"
+        ]
+      },
+      {
+        "@type": "LocalBusiness",
+        "@id": "https://inkdraft-mu.vercel.app/#localbusiness",
+        "name": "InkDraft Studio",
+        "url": "https://inkdraft-mu.vercel.app",
+        "image": "https://images.unsplash.com/photo-1604836454547-28b7a2317d0e?w=1200&q=80",
+        "priceRange": "$$$",
+        "openingHours": "Mo-Sa 10:00-20:00",
+        "hasMap": "https://maps.google.com"
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://inkdraft-mu.vercel.app/#website",
+        "url": "https://inkdraft-mu.vercel.app",
+        "name": "InkDraft",
+        "description": "Premium tattoo studio with world-class artists.",
+        "publisher": { "@id": "https://inkdraft-mu.vercel.app/#organization" }
+      }
+    ]
+  }
+  </script>
+
+  <!-- ── Theme flash prevention ────────────────────────── -->
   <script>
     (function() {
       try {
