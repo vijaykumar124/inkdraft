@@ -7,6 +7,7 @@ const Testimonial = require('../models/Testimonial');
 const Order = require('../models/Order');
 const Pricing = require('../models/Pricing');
 const Settings = require('../models/Settings');
+const User = require('../models/User');
 const path = require('path');
 const fs = require('fs');
 
@@ -341,3 +342,34 @@ exports.updateSettings = async (req, res) => {
     res.json({ success: false, message: err.message });
   }
 };
+
+// ── Users ─────────────────────────────────────────────
+exports.getUsers = async (req, res) => {
+  const users = await User.find().select('-password').sort('-createdAt');
+  res.render('admin/users', { title: 'Registered Users', layout: 'layouts/admin', users });
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const { name, email, phone, isActive } = req.body;
+    const update = {};
+    if (name) update.name = name;
+    if (email) update.email = email;
+    if (phone !== undefined) update.phone = phone;
+    if (isActive !== undefined) update.isActive = isActive === 'true' || isActive === true;
+    await User.findByIdAndUpdate(req.params.id, update);
+    res.json({ success: true, message: 'User updated' });
+  } catch (err) {
+    res.json({ success: false, message: err.message });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'User deleted' });
+  } catch (err) {
+    res.json({ success: false, message: err.message });
+  }
+};
+

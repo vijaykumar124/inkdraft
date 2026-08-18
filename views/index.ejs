@@ -54,7 +54,24 @@
           </svg>
         </button>
 
-        <a href="/admin/login" class="nav-login">Login</a>
+        <% if (typeof user !== 'undefined' && user) { %>
+          <div class="user-profile-menu">
+            <button class="user-profile-btn" id="user-menu-toggle" type="button">
+              <span class="user-avatar-small"><%= user.name.charAt(0).toUpperCase() %></span>
+              <span class="user-name-small"><%= user.name.split(' ')[0] %></span>
+              <span style="font-size:0.7rem;opacity:0.7">▾</span>
+            </button>
+            <div class="user-dropdown-content" id="user-dropdown">
+              <div class="user-dropdown-header">
+                <div style="font-weight: 700; color: var(--text-primary);"><%= user.name %></div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);"><%= user.email %></div>
+              </div>
+              <a href="/api/user/logout" class="user-dropdown-item logout-item">🚪 Logout</a>
+            </div>
+          </div>
+        <% } else { %>
+          <button type="button" class="nav-login" id="open-auth-modal">Login / Register</button>
+        <% } %>
 
         <a href="#order-form" class="nav-get-started">Get Started</a>
       </div>
@@ -590,3 +607,185 @@
     </div>
   </div>
 </footer>
+
+<!-- User Auth Modal (Login / Register) -->
+<div class="user-auth-backdrop" id="user-auth-modal">
+  <div class="user-auth-card">
+    <button type="button" class="user-auth-close" id="close-auth-modal">✕</button>
+    <div class="user-auth-header">
+      <div class="auth-logo">I</div>
+      <div class="auth-title">Ink<span>Draft</span></div>
+      <div class="auth-subtitle">Join InkDraft or Sign in to your account</div>
+    </div>
+    <div class="user-auth-tabs">
+      <button type="button" class="auth-tab active" id="tab-login-btn">Sign In</button>
+      <button type="button" class="auth-tab" id="tab-signup-btn">Create Account</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="user-login-form" class="auth-form">
+      <div class="auth-group">
+        <label class="auth-label">Email Address</label>
+        <input type="email" name="email" class="auth-input" placeholder="you@example.com" required>
+      </div>
+      <div class="auth-group">
+        <label class="auth-label">Password</label>
+        <input type="password" name="password" class="auth-input" placeholder="••••••••" required>
+      </div>
+      <div class="auth-error-msg" id="login-error-msg"></div>
+      <button type="submit" class="auth-submit-btn" id="login-submit-btn">Sign In →</button>
+    </form>
+
+    <!-- Signup Form -->
+    <form id="user-signup-form" class="auth-form hidden">
+      <div class="auth-group">
+        <label class="auth-label">Full Name *</label>
+        <input type="text" name="name" class="auth-input" placeholder="John Doe" required>
+      </div>
+      <div class="auth-group">
+        <label class="auth-label">Email Address *</label>
+        <input type="email" name="email" class="auth-input" placeholder="you@example.com" required>
+      </div>
+      <div class="auth-group">
+        <label class="auth-label">Phone Number</label>
+        <input type="tel" name="phone" class="auth-input" placeholder="+1 (555) 000-0000">
+      </div>
+      <div class="auth-group">
+        <label class="auth-label">Password *</label>
+        <input type="password" name="password" class="auth-input" placeholder="••••••••" required minlength="6">
+      </div>
+      <div class="auth-error-msg" id="signup-error-msg"></div>
+      <button type="submit" class="auth-submit-btn" id="signup-submit-btn">Create Account →</button>
+    </form>
+
+    <div class="auth-footer-note">
+      Are you a studio admin? <a href="/admin-panel/login" target="_blank" class="admin-link">Admin Login</a>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('user-auth-modal');
+  const openBtn = document.getElementById('open-auth-modal');
+  const closeBtn = document.getElementById('close-auth-modal');
+  const tabLoginBtn = document.getElementById('tab-login-btn');
+  const tabSignupBtn = document.getElementById('tab-signup-btn');
+  const loginForm = document.getElementById('user-login-form');
+  const signupForm = document.getElementById('user-signup-form');
+  const loginErr = document.getElementById('login-error-msg');
+  const signupErr = document.getElementById('signup-error-msg');
+
+  // User Profile Dropdown Toggle
+  const userMenuToggle = document.getElementById('user-menu-toggle');
+  const userDropdown = document.getElementById('user-dropdown');
+  if (userMenuToggle && userDropdown) {
+    userMenuToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      userDropdown.classList.toggle('show');
+    });
+    document.addEventListener('click', () => {
+      userDropdown.classList.remove('show');
+    });
+  }
+
+  if (openBtn && modal) {
+    openBtn.addEventListener('click', () => modal.classList.add('open'));
+  }
+  if (closeBtn && modal) {
+    closeBtn.addEventListener('click', () => modal.classList.remove('open'));
+  }
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('open');
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('open')) modal.classList.remove('open');
+    });
+  }
+
+  // Switch tabs
+  if (tabLoginBtn && tabSignupBtn) {
+    tabLoginBtn.addEventListener('click', () => {
+      tabLoginBtn.classList.add('active');
+      tabSignupBtn.classList.remove('active');
+      loginForm.classList.remove('hidden');
+      signupForm.classList.add('hidden');
+      loginErr.textContent = '';
+    });
+    tabSignupBtn.addEventListener('click', () => {
+      tabSignupBtn.classList.add('active');
+      tabLoginBtn.classList.remove('active');
+      signupForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+      signupErr.textContent = '';
+    });
+  }
+
+  // User Login Submit
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginErr.textContent = '';
+      const submitBtn = document.getElementById('login-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in...';
+
+      try {
+        const formData = new FormData(loginForm);
+        const data = Object.fromEntries(formData);
+        const res = await fetch('/api/user/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (result.success) {
+          if (window.showToast) window.showToast('✅ ' + result.message, 'success');
+          setTimeout(() => location.reload(), 600);
+        } else {
+          loginErr.textContent = result.message || 'Login failed';
+        }
+      } catch (err) {
+        loginErr.textContent = 'Network error. Please try again.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign In →';
+      }
+    });
+  }
+
+  // User Signup Submit
+  if (signupForm) {
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      signupErr.textContent = '';
+      const submitBtn = document.getElementById('signup-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating account...';
+
+      try {
+        const formData = new FormData(signupForm);
+        const data = Object.fromEntries(formData);
+        const res = await fetch('/api/user/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (result.success) {
+          if (window.showToast) window.showToast('🎉 ' + result.message, 'success');
+          setTimeout(() => location.reload(), 600);
+        } else {
+          signupErr.textContent = result.message || 'Signup failed';
+        }
+      } catch (err) {
+        signupErr.textContent = 'Network error. Please try again.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account →';
+      }
+    });
+  }
+});
+</script>

@@ -52,6 +52,7 @@ exports.getHomePage = async (req, res) => {
       title: settings.siteTitle || 'InkDraft - Design Your Next Tattoo',
       metaDescription: settings.metaDescription || 'Premium tattoo studio with world-class artists.',
       artists, featuredDesigns, categories, testimonials, pricingPlans, settings, galleryDesigns,
+      user: req.session.user || null,
       layout: 'layouts/main'
     });
   } catch (err) {
@@ -60,6 +61,7 @@ exports.getHomePage = async (req, res) => {
       title: 'InkDraft - Design Your Next Tattoo',
       metaDescription: 'Premium tattoo studio with world-class artists.',
       artists: [], featuredDesigns: [], categories: [], testimonials: [], pricingPlans: [], settings: {}, galleryDesigns: [],
+      user: req.session.user || null,
       layout: 'layouts/main'
     });
   }

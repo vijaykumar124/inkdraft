@@ -46,6 +46,11 @@ router.post('/pricing', protect, adminCtrl.createPricing);
 router.put('/pricing/:id', protect, adminCtrl.updatePricing);
 router.delete('/pricing/:id', protect, adminCtrl.deletePricing);
 
+// Users
+router.get('/users', protect, adminCtrl.getUsers);
+router.put('/users/:id', protect, adminCtrl.updateUser);
+router.delete('/users/:id', protect, adminCtrl.deleteUser);
+
 // Settings
 router.get('/settings', protect, adminCtrl.getSettings);
 router.post('/settings', protect, adminCtrl.updateSettings);

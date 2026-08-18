@@ -24,7 +24,7 @@ app.use(expressLayouts);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve React Admin build at /admin-panel (if built)
-const reactBuildPath = path.join(__dirname, '../admin-react/dist');
+const reactBuildPath = path.join(__dirname, 'admin-react/dist');
 const fs = require('fs');
 if (fs.existsSync(reactBuildPath)) {
   app.use('/admin-panel', express.static(reactBuildPath));
@@ -93,6 +93,7 @@ app.get('/health', (req, res) => {
 });
 
 // ── Routes ────────────────────────────────────────────────
+app.use('/api/user', require('./routes/userAuth'));  // User Signup / Login API
 app.use('/', require('./routes/index'));
 app.use('/admin/api', require('./routes/adminApi'));  // React API (JSON, Bearer token)
 app.use('/admin', require('./routes/admin'));          // EJS admin (session-based)

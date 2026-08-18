@@ -14,6 +14,7 @@ const Testimonial = require('../models/Testimonial');
 const Order = require('../models/Order');
 const Pricing = require('../models/Pricing');
 const Settings = require('../models/Settings');
+const User = require('../models/User');
 const { protectApi } = require('../middleware/auth');
 const path = require('path');
 const connectDb = require('../config/connectDb');
@@ -379,6 +380,40 @@ router.post('/settings', protectApi, async (req, res) => {
     );
     await Promise.all(ops);
     res.json({ success: true, message: 'Settings saved' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ── Users Management ───────────────────────────────────────
+router.get('/users', protectApi, async (req, res) => {
+  try {
+    const users = await User.find().select('-password').sort('-createdAt');
+    res.json({ success: true, data: users });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.put('/users/:id', protectApi, async (req, res) => {
+  try {
+    const { name, email, phone, isActive } = req.body;
+    const update = {};
+    if (name) update.name = name;
+    if (email) update.email = email;
+    if (phone !== undefined) update.phone = phone;
+    if (isActive !== undefined) update.isActive = isActive === true || isActive === 'true';
+    const user = await User.findByIdAndUpdate(req.params.id, update, { new: true }).select('-password');
+    res.json({ success: true, message: 'User updated', data: user });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.delete('/users/:id', protectApi, async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'User deleted' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

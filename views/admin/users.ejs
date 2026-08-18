@@ -1,0 +1,60 @@
+<!-- Users Management -->
+<div class="card">
+  <div class="card-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="card-title">Registered Users</div>
+      <span class="badge badge-gold"><%= users.length %> total</span>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Joined Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (users && users.length > 0) { %>
+          <% users.forEach(u => { %>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#000;font-weight:700;display:flex;align-items:center;justify-content:center">
+                    <%= u.name.charAt(0).toUpperCase() %>
+                  </div>
+                  <span style="font-weight:600;color:var(--text-primary)"><%= u.name %></span>
+                </div>
+              </td>
+              <td style="color:var(--text-muted);font-size:0.83rem"><%= u.email %></td>
+              <td><%= u.phone || '—' %></td>
+              <td style="color:var(--text-muted);font-size:0.78rem"><%= new Date(u.createdAt).toLocaleDateString() %></td>
+              <td>
+                <span class="badge <%= u.isActive ? 'badge-green' : 'badge-red' %>">
+                  <%= u.isActive ? 'Active' : 'Blocked' %>
+                </span>
+              </td>
+              <td>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-danger-outline btn-sm btn-icon delete-user" data-id="<%= u._id %>" title="Delete User">🗑</button>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">No registered users yet</div></div></td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.delete-user').forEach(btn => {
+  btn.addEventListener('click', () => confirmDelete(`/admin/users/${btn.dataset.id}`, () => btn.closest('tr').remove()));
+});
+</script>
