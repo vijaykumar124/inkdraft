@@ -104,6 +104,12 @@ app.use('/api/user', require('./routes/userAuth'));       // User Signup / Login
 app.use('/admin/api', require('./routes/adminApi'));       // React Admin REST API
 app.use('/admin-classic', require('./routes/admin'));     // Classic EJS admin backup
 
+// Redirect old /admin-panel URLs to /admin
+app.use('/admin-panel*', (req, res) => {
+  const newPath = req.originalUrl.replace('/admin-panel', '/admin');
+  res.redirect(301, newPath);
+});
+
 // Direct /admin and /admin/ to /admin/login
 app.get(['/admin', '/admin/'], (req, res) => {
   res.redirect('/admin/login');
