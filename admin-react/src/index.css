@@ -568,3 +568,178 @@ img { max-width: 100%; display: block; }
   .r-stats-grid { grid-template-columns: 1fr; }
   .r-login-card { padding: 32px 24px; }
 }
+
+/* ── Category Gallery Admin Page ─────────────────────────── */
+.r-page-sub {
+  color: var(--r-text-secondary);
+  font-size: 0.82rem;
+  margin-top: 2px;
+}
+.r-input-file {
+  background: var(--r-bg-input);
+  border: 1px dashed var(--r-border);
+  border-radius: var(--r-radius);
+  padding: 10px 14px;
+  color: var(--r-text);
+  font-size: 0.85rem;
+  width: 100%;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.r-input-file:hover { border-color: var(--r-gold); }
+
+/* Admin Gallery Grid */
+.cgal-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+.cgal-admin-card {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--r-bg-card);
+  border: 1px solid var(--r-border-subtle);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.cgal-admin-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.cgal-admin-img-wrap {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  cursor: pointer;
+}
+.cgal-admin-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s;
+}
+.cgal-admin-card:hover .cgal-admin-img { transform: scale(1.05); }
+.cgal-admin-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.cgal-admin-img-wrap:hover .cgal-admin-overlay { opacity: 1; }
+.cgal-admin-title {
+  padding: 8px 10px 4px;
+  font-size: 0.75rem;
+  color: var(--r-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cgal-admin-delete-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(224, 92, 92, 0.9);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.9rem;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.cgal-admin-card:hover .cgal-admin-delete-btn { opacity: 1; }
+.cgal-admin-delete-btn:hover { background: #c0392b; }
+
+/* Admin Lightbox */
+.cgal-lb-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.95);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cgal-lb-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.cgal-lb-img {
+  max-width: 90vw;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
+}
+.cgal-lb-caption {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.85rem;
+  margin-top: 12px;
+  text-align: center;
+}
+.cgal-lb-counter {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.78rem;
+  margin-top: 6px;
+}
+.cgal-lb-close {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 1.2rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10000;
+}
+.cgal-lb-close:hover { background: rgba(255,255,255,0.2); }
+.cgal-lb-nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+  font-size: 2rem;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10000;
+}
+.cgal-lb-nav:hover { background: rgba(255,255,255,0.2); }
+.cgal-lb-prev { left: 16px; }
+.cgal-lb-next { right: 16px; }
+
+@media (max-width: 600px) {
+  .cgal-admin-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+}

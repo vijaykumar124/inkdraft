@@ -11,6 +11,7 @@ const path = require('path');
 const Admin = require('../models/Admin');
 const Design = require('../models/Design');
 const Category = require('../models/Category');
+const CategoryImage = require('../models/CategoryImage');
 const Testimonial = require('../models/Testimonial');
 const Order = require('../models/Order');
 const Pricing = require('../models/Pricing');
@@ -394,6 +395,80 @@ router.delete('/users/:id', protectApi, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'User deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ── Category Images (Gallery) ───────────────────────────────
+// GET all images for a category
+router.get('/category-images/:categoryId', protectApi, async (req, res) => {
+  try {
+    const images = await CategoryImage.find({ categoryId: req.params.categoryId }).sort('order createdAt');
+    res.json({ success: true, data: images });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST upload one or more images to a category
+router.post('/category-images/:categoryId', protectApi, async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.categoryId);
+    if (!category) return res.status(404).json({ success: false, message: 'Category not found' });
+
+    const saved = [];
+
+    // Handle file uploads (single or multiple — field name: 'images' or 'image')
+    const fileFields = req.files ? Object.values(req.files) : [];
+    const allFiles = [];
+    fileFields.forEach(f => {
+      if (Array.isArray(f)) allFiles.push(...f);
+      else allFiles.push(f);
+    });
+
+    for (const file of allFiles) {
+      const url = await handleFileUpload(file);
+      if (url) {
+        const img = await CategoryImage.create({
+          categoryId: category._id,
+          categorySlug: category.slug,
+          image: url,
+          title: req.body.title || ''
+        });
+        saved.push(img);
+      }
+    }
+
+    // Handle imageUrls (comma-separated or array from body)
+    const urls = req.body.imageUrls
+      ? (Array.isArray(req.body.imageUrls) ? req.body.imageUrls : req.body.imageUrls.split(',').map(u => u.trim()).filter(Boolean))
+      : (req.body.imageUrl ? [req.body.imageUrl.trim()] : []);
+
+    for (const url of urls) {
+      if (url) {
+        const img = await CategoryImage.create({
+          categoryId: category._id,
+          categorySlug: category.slug,
+          image: url,
+          title: req.body.title || ''
+        });
+        saved.push(img);
+      }
+    }
+
+    if (saved.length === 0) return res.status(400).json({ success: false, message: 'No images provided' });
+    res.json({ success: true, message: `${saved.length} image(s) uploaded`, data: saved });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// DELETE a single category image
+router.delete('/category-images/:id', protectApi, async (req, res) => {
+  try {
+    await CategoryImage.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Image deleted' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

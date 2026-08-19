@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Designs from './pages/Designs';
 import Categories from './pages/Categories';
+import CategoryGallery from './pages/CategoryGallery';
 import Orders from './pages/Orders';
 import Testimonials from './pages/Testimonials';
 import Pricing from './pages/Pricing';
@@ -40,6 +41,7 @@ export default function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="designs" element={<Designs />} />
               <Route path="categories" element={<Categories />} />
+              <Route path="category-gallery/:categoryId" element={<CategoryGallery />} />
               <Route path="orders" element={<Orders />} />
               <Route path="users" element={<Users />} />
               <Route path="testimonials" element={<Testimonials />} />

@@ -63,6 +63,11 @@ export const api = {
   updateCategory: (id, data) => request('PUT', `/categories/${id}`, data),
   deleteCategory: (id) => request('DELETE', `/categories/${id}`),
 
+  // Category Gallery Images
+  getCategoryImages: (categoryId) => request('GET', `/category-images/${categoryId}`),
+  uploadCategoryImages: (categoryId, formData) => request('POST', `/category-images/${categoryId}`, formData, true),
+  deleteCategoryImage: (id) => request('DELETE', `/category-images/${id}`),
+
   // Orders
   getOrders: (params = {}) => {
     const q = new URLSearchParams(params).toString();

@@ -7,6 +7,7 @@ const router = express.Router();
 const Artist = require('../models/Artist');
 const Design = require('../models/Design');
 const Category = require('../models/Category');
+const CategoryImage = require('../models/CategoryImage');
 const Testimonial = require('../models/Testimonial');
 const Pricing = require('../models/Pricing');
 const Settings = require('../models/Settings');
@@ -80,6 +81,19 @@ router.post('/order', async (req, res) => {
     res.json({ success: true, message: 'Consultation request submitted! We will contact you within 24 hours.', orderNumber: order.orderNumber });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Failed to submit request.' });
+  }
+});
+
+// GET /api/public/category/:slug — Category info + all gallery images
+router.get('/category/:slug', async (req, res) => {
+  try {
+    await connectDb();
+    const category = await Category.findOne({ slug: req.params.slug, isActive: true });
+    if (!category) return res.status(404).json({ success: false, message: 'Category not found' });
+    const images = await CategoryImage.find({ categoryId: category._id }).sort('order createdAt');
+    res.json({ success: true, data: { category, images } });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 

@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import Modal from '../components/Modal';
 import Spinner from '../components/Spinner';
@@ -15,6 +16,7 @@ export default function Categories() {
   const [saving, setSaving] = useState(false);
   const imageRef = useRef(null);
   const { showToast } = useToast();
+  const navigate = useNavigate();
 
   const load = async () => {
     const res = await api.getCategories();
@@ -91,6 +93,11 @@ export default function Categories() {
                     <td><span className={`r-badge ${c.isActive ? 'r-badge-green' : 'r-badge-red'}`}>{c.isActive ? 'Active' : 'Hidden'}</span></td>
                     <td>
                       <div className="r-actions">
+                        <button
+                          className="r-btn r-btn-sm"
+                          style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', border: 'none' }}
+                          onClick={() => navigate(`/admin/category-gallery/${c._id}`)}
+                        >🖼️ Images</button>
                         <button className="r-btn r-btn-sm r-btn-secondary" onClick={() => { setForm({ name: c.name, slug: c.slug, description: c.description || '', isActive: c.isActive, imageUrl: c.image || '' }); setEditId(c._id); setModal('edit'); }}>✏️ Edit</button>
                         <button className="r-btn r-btn-sm r-btn-danger" onClick={() => handleDelete(c._id)}>🗑</button>
                       </div>
