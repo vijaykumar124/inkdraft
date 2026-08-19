@@ -27,7 +27,6 @@
         <li><a href="#categories">Styles</a></li>
         <li><a href="#journey">How it works</a></li>
         <li><a href="#featured">Gallery</a></li>
-        <li><a href="#artists">Artists</a></li>
         <li><a href="#pricing">Pricing</a></li>
         <li><a href="#testimonials">Reviews</a></li>
       </ul>
@@ -92,7 +91,6 @@
   <a href="#categories" class="mobile-link">Styles</a>
   <a href="#journey" class="mobile-link">How it works</a>
   <a href="#featured" class="mobile-link">Gallery</a>
-  <a href="#artists" class="mobile-link">Artists</a>
   <a href="#pricing" class="mobile-link">Pricing</a>
   <a href="#order-form" class="btn btn-gold">Get Started</a>
 </nav>
@@ -356,56 +354,7 @@
             <div class="design-title"><%= d.title %></div>
             <div class="design-category"><%= d.category || d.cat %></div>
             <div class="design-actions">
-              <a href="#order-form" class="design-action-btn">Get This Style</a>
-            </div>
-          </div>
-        </div>
-      <% }); %>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════
-     CTA BANNER
-     ══════════════════════════════════════════════════════ -->
-<section id="cta-banner">
-  <div class="container">
-    <div class="cta-banner-inner">
-      <div>
-        <span class="cta-eyebrow" data-reveal>From Concept</span>
-        <h2 class="cta-title" data-reveal>To <span style="color:var(--gold)">Masterpiece</span><br>On Your Skin</h2>
-        <p class="cta-desc" data-reveal>Our artists have transformed thousands of ideas into wearable art. Every tattoo is a collaboration — your vision, our expertise, one unforgettable result.</p>
-        <div class="cta-actions" data-reveal>
-          <a href="#order-form" class="btn btn-gold btn-lg">Start Your Journey →</a>
-          <a href="#artists" class="btn btn-outline">Meet Our Artists</a>
-        </div>
-      </div>
-      <div class="cta-visual" data-reveal="right">
-        <div class="cta-image-stack">
-          <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=700&q=80&fit=crop" alt="Tattoo art" class="cta-img-main" loading="lazy">
-          <img src="https://images.unsplash.com/photo-1590246814883-55516d2d2267?w=400&q=80&fit=crop" alt="Tattoo detail" class="cta-img-accent" loading="lazy">
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="cta-glow"></div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════
-     ARTISTS
-     ══════════════════════════════════════════════════════ -->
-<section id="artists" class="section">
-  <div class="container">
-    <div class="section-header">
-      <div>
-        <span class="eyebrow">The Team</span>
-        <h2 class="heading-lg" data-reveal>Meet Our <span class="text-gold">Artists</span></h2>
-      </div>
-    </div>
-    <div class="artists-grid">
-      <%
-        const demoArtists = [
-          { name:'Alex Rivera',   specialty:'Japanese',  img:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80&fit=crop&crop=face', rating:'5.0', reviewCount:247,  instagram:'alex_inkcraft'   },
+              <a href="#order-form" cl   specialty:'Japanese',  img:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80&fit=crop&crop=face', rating:'5.0', reviewCount:247,  instagram:'alex_inkcraft'   },
           { name:'Maya Chen',     specialty:'Fine Line', img:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80&fit=crop&crop=face', rating:'4.9', reviewCount:198,  instagram:'maya_fineline'   },
           { name:'Jordan Blake',  specialty:'Geometric', img:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80&fit=crop&crop=face', rating:'4.8', reviewCount:156,  instagram:'jordan_geo'      },
           { name:'Sam Torres',    specialty:'Realism',   img:'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80&fit=crop&crop=face', rating:'5.0', reviewCount:312,  instagram:'sam_realism'     },

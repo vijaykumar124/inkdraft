@@ -8,7 +8,6 @@ const navItems = [
     { to: '/admin/users', icon: '👥', label: 'Users' },
   ]},
   { section: 'Content', items: [
-    { to: '/admin/artists', icon: '👤', label: 'Artists' },
     { to: '/admin/designs', icon: '🎨', label: 'Designs' },
     { to: '/admin/categories', icon: '📁', label: 'Categories' },
     { to: '/admin/testimonials', icon: '⭐', label: 'Testimonials' },

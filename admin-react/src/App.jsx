@@ -4,7 +4,6 @@ import { ToastProvider } from './hooks/useToast';
 import AdminLayout from './components/AdminLayout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import Artists from './pages/Artists';
 import Designs from './pages/Designs';
 import Categories from './pages/Categories';
 import Orders from './pages/Orders';
@@ -39,7 +38,6 @@ export default function App() {
             }>
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
-              <Route path="artists" element={<Artists />} />
               <Route path="designs" element={<Designs />} />
               <Route path="categories" element={<Categories />} />
               <Route path="orders" element={<Orders />} />

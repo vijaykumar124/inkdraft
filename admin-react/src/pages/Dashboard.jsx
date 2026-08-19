@@ -28,7 +28,7 @@ export default function Dashboard() {
   const stats = [
     { label: 'Total Orders', value: data?.totalOrders ?? 0, icon: '📋', color: '#c9a84c' },
     { label: 'Pending Orders', value: data?.pendingOrders ?? 0, icon: '⏳', color: '#e8a53c' },
-    { label: 'Active Artists', value: data?.totalArtists ?? 0, icon: '👤', color: '#4c8ecf' },
+    { label: 'Categories', value: data?.totalCategories ?? 0, icon: '📁', color: '#4c8ecf' },
     { label: 'Active Designs', value: data?.totalDesigns ?? 0, icon: '🎨', color: '#4caf6e' },
   ];
 

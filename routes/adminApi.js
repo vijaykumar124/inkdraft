@@ -6,8 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
 const Admin = require('../models/Admin');
-const Artist = require('../models/Artist');
 const Design = require('../models/Design');
 const Category = require('../models/Category');
 const Testimonial = require('../models/Testimonial');
@@ -16,8 +17,27 @@ const Pricing = require('../models/Pricing');
 const Settings = require('../models/Settings');
 const User = require('../models/User');
 const { protectApi } = require('../middleware/auth');
-const path = require('path');
 const connectDb = require('../config/connectDb');
+
+// Helper to safely handle file uploads locally or fallback to Base64 (Vercel serverless read-only disk)
+const handleFileUpload = async (file, fallbackUrl = '') => {
+  if (!file) return fallbackUrl;
+  try {
+    const uploadsDir = path.join(__dirname, '../public/uploads');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    const filename = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '');
+    const uploadPath = path.join(uploadsDir, filename);
+    await file.mv(uploadPath);
+    return '/uploads/' + filename;
+  } catch (err) {
+    console.warn('Local file move failed (Vercel read-only filesystem), converting to Base64 Data URI:', err.message);
+    const mime = file.mimetype || 'image/png';
+    const base64 = file.data ? file.data.toString('base64') : '';
+    return base64 ? `data:${mime};base64,${base64}` : fallbackUrl;
+  }
+};
 
 // Ensure DB connected on every API call
 router.use(async (req, res, next) => {
@@ -26,7 +46,6 @@ router.use(async (req, res, next) => {
 });
 
 // ── Auth ──────────────────────────────────────────────────
-// POST /admin/api/login → returns JWT token
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -43,11 +62,10 @@ router.post('/login', async (req, res) => {
       admin: { id: admin._id, name: admin.name, email: admin.email, role: admin.role }
     });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Login failed' });
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// GET /admin/api/me → current user info
 router.get('/me', protectApi, (req, res) => {
   res.json({ success: true, admin: req.admin });
 });
@@ -55,68 +73,16 @@ router.get('/me', protectApi, (req, res) => {
 // ── Dashboard ──────────────────────────────────────────────
 router.get('/dashboard', protectApi, async (req, res) => {
   try {
-    const [totalOrders, pendingOrders, totalArtists, totalDesigns, recentOrders, ordersByStatus] = await Promise.all([
+    const [totalOrders, pendingOrders, totalDesigns, totalCategories, totalUsers, recentOrders, ordersByStatus] = await Promise.all([
       Order.countDocuments(),
       Order.countDocuments({ status: 'pending' }),
-      Artist.countDocuments({ isActive: true }),
       Design.countDocuments({ isActive: true }),
-      Order.find().sort('-createdAt').limit(5).populate('preferredArtist', 'name'),
+      Category.countDocuments({ isActive: true }),
+      User.countDocuments(),
+      Order.find().sort('-createdAt').limit(5),
       Order.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }])
     ]);
-    res.json({ success: true, data: { totalOrders, pendingOrders, totalArtists, totalDesigns, recentOrders, ordersByStatus } });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-// ── Artists ────────────────────────────────────────────────
-router.get('/artists', protectApi, async (req, res) => {
-  try {
-    const artists = await Artist.find().sort('order');
-    res.json({ success: true, data: artists });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-router.post('/artists', protectApi, async (req, res) => {
-  try {
-    const { name, specialty, experience, bio, instagram, rating } = req.body;
-    let image = '/images/default-artist.jpg';
-    if (req.files && req.files.image) {
-      const file = req.files.image;
-      const uploadPath = path.join(__dirname, '../public/uploads/', Date.now() + '_' + file.name);
-      await file.mv(uploadPath);
-      image = '/uploads/' + path.basename(uploadPath);
-    }
-    const artist = await Artist.create({ name, specialty, experience, bio, instagram, rating, image });
-    res.json({ success: true, message: 'Artist created', data: artist });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-router.put('/artists/:id', protectApi, async (req, res) => {
-  try {
-    const { name, specialty, experience, bio, instagram, rating, isActive } = req.body;
-    const update = { name, specialty, experience, bio, instagram, rating, isActive: isActive === true || isActive === 'true' };
-    if (req.files && req.files.image) {
-      const file = req.files.image;
-      const uploadPath = path.join(__dirname, '../public/uploads/', Date.now() + '_' + file.name);
-      await file.mv(uploadPath);
-      update.image = '/uploads/' + path.basename(uploadPath);
-    }
-    const artist = await Artist.findByIdAndUpdate(req.params.id, update, { new: true });
-    res.json({ success: true, message: 'Artist updated', data: artist });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-router.delete('/artists/:id', protectApi, async (req, res) => {
-  try {
-    await Artist.findByIdAndDelete(req.params.id);
-    res.json({ success: true, message: 'Artist deleted' });
+    res.json({ success: true, data: { totalOrders, pendingOrders, totalDesigns, totalCategories, totalUsers, recentOrders, ordersByStatus } });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -125,7 +91,7 @@ router.delete('/artists/:id', protectApi, async (req, res) => {
 // ── Designs ────────────────────────────────────────────────
 router.get('/designs', protectApi, async (req, res) => {
   try {
-    const designs = await Design.find().populate('artist', 'name').sort('-createdAt');
+    const designs = await Design.find().sort('-createdAt');
     res.json({ success: true, data: designs });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -134,16 +100,19 @@ router.get('/designs', protectApi, async (req, res) => {
 
 router.post('/designs', protectApi, async (req, res) => {
   try {
-    const { title, category, artist, tags, isFeatured } = req.body;
-    let image = '';
+    const { title, category, tags, isFeatured, imageUrl } = req.body;
+    let image = imageUrl || '';
     if (req.files && req.files.image) {
-      const file = req.files.image;
-      const uploadPath = path.join(__dirname, '../public/uploads/', Date.now() + '_' + file.name);
-      await file.mv(uploadPath);
-      image = '/uploads/' + path.basename(uploadPath);
+      image = await handleFileUpload(req.files.image, image);
     }
     const tagsArr = tags ? (Array.isArray(tags) ? tags : tags.split(',').map(t => t.trim())) : [];
-    const design = await Design.create({ title, category, artist: artist || undefined, tags: tagsArr, isFeatured: isFeatured === true || isFeatured === 'true', image });
+    const design = await Design.create({
+      title,
+      category,
+      tags: tagsArr,
+      isFeatured: isFeatured === true || isFeatured === 'true',
+      image: image || 'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=600&q=80'
+    });
     res.json({ success: true, message: 'Design created', data: design });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -152,14 +121,17 @@ router.post('/designs', protectApi, async (req, res) => {
 
 router.put('/designs/:id', protectApi, async (req, res) => {
   try {
-    const { title, category, artist, tags, isFeatured, isActive } = req.body;
-    const update = { title, category, artist: artist || undefined, isFeatured: isFeatured === true || isFeatured === 'true', isActive: isActive === true || isActive === 'true' };
+    const { title, category, tags, isFeatured, isActive, imageUrl } = req.body;
+    const update = {
+      title,
+      category,
+      isFeatured: isFeatured === true || isFeatured === 'true',
+      isActive: isActive === true || isActive === 'true'
+    };
     if (tags) update.tags = Array.isArray(tags) ? tags : tags.split(',').map(t => t.trim());
+    if (imageUrl) update.image = imageUrl;
     if (req.files && req.files.image) {
-      const file = req.files.image;
-      const uploadPath = path.join(__dirname, '../public/uploads/', Date.now() + '_' + file.name);
-      await file.mv(uploadPath);
-      update.image = '/uploads/' + path.basename(uploadPath);
+      update.image = await handleFileUpload(req.files.image, update.image || '');
     }
     const design = await Design.findByIdAndUpdate(req.params.id, update, { new: true });
     res.json({ success: true, message: 'Design updated', data: design });
@@ -189,13 +161,10 @@ router.get('/categories', protectApi, async (req, res) => {
 
 router.post('/categories', protectApi, async (req, res) => {
   try {
-    const { name, slug, description } = req.body;
-    let image = '';
+    const { name, slug, description, imageUrl } = req.body;
+    let image = imageUrl || '';
     if (req.files && req.files.image) {
-      const file = req.files.image;
-      const uploadPath = path.join(__dirname, '../public/uploads/', Date.now() + '_' + file.name);
-      await file.mv(uploadPath);
-      image = '/uploads/' + path.basename(uploadPath);
+      image = await handleFileUpload(req.files.image, image);
     }
     const category = await Category.create({ name, slug, description, image });
     res.json({ success: true, message: 'Category created', data: category });
@@ -206,13 +175,11 @@ router.post('/categories', protectApi, async (req, res) => {
 
 router.put('/categories/:id', protectApi, async (req, res) => {
   try {
-    const { name, slug, description, isActive } = req.body;
+    const { name, slug, description, isActive, imageUrl } = req.body;
     const update = { name, slug, description, isActive: isActive === true || isActive === 'true' };
+    if (imageUrl) update.image = imageUrl;
     if (req.files && req.files.image) {
-      const file = req.files.image;
-      const uploadPath = path.join(__dirname, '../public/uploads/', Date.now() + '_' + file.name);
-      await file.mv(uploadPath);
-      update.image = '/uploads/' + path.basename(uploadPath);
+      update.image = await handleFileUpload(req.files.image, update.image || '');
     }
     const category = await Category.findByIdAndUpdate(req.params.id, update, { new: true });
     res.json({ success: true, message: 'Category updated', data: category });
@@ -236,7 +203,7 @@ router.get('/orders', protectApi, async (req, res) => {
     const { status, page = 1, limit = 10 } = req.query;
     const query = status ? { status } : {};
     const [orders, total] = await Promise.all([
-      Order.find(query).populate('preferredArtist', 'name').sort('-createdAt').skip((page - 1) * limit).limit(Number(limit)),
+      Order.find(query).sort('-createdAt').skip((page - 1) * limit).limit(Number(limit)),
       Order.countDocuments(query)
     ]);
     res.json({ success: true, data: { orders, total, page: Number(page), pages: Math.ceil(total / limit) } });
@@ -247,8 +214,7 @@ router.get('/orders', protectApi, async (req, res) => {
 
 router.get('/orders/:id', protectApi, async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate('preferredArtist', 'name');
-    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    const order = await Order.findById(req.params.id);
     res.json({ success: true, data: order });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -257,8 +223,12 @@ router.get('/orders/:id', protectApi, async (req, res) => {
 
 router.put('/orders/:id', protectApi, async (req, res) => {
   try {
-    const { status, quotedPrice, adminNotes, appointmentDate } = req.body;
-    const order = await Order.findByIdAndUpdate(req.params.id, { status, quotedPrice, adminNotes, appointmentDate }, { new: true });
+    const { status, quotedPrice, appointmentDate, adminNotes } = req.body;
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { status, quotedPrice, appointmentDate, adminNotes },
+      { new: true }
+    );
     res.json({ success: true, message: 'Order updated', data: order });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -277,15 +247,17 @@ router.get('/testimonials', protectApi, async (req, res) => {
 
 router.post('/testimonials', protectApi, async (req, res) => {
   try {
-    const { name, location, rating, review, tattooStyle, isApproved, isFeatured } = req.body;
-    let avatar = '';
+    const { name, location, rating, review, tattooStyle, isApproved, isFeatured, avatarUrl } = req.body;
+    let avatar = avatarUrl || '';
     if (req.files && req.files.avatar) {
-      const file = req.files.avatar;
-      const uploadPath = path.join(__dirname, '../public/uploads/', Date.now() + '_' + file.name);
-      await file.mv(uploadPath);
-      avatar = '/uploads/' + path.basename(uploadPath);
+      avatar = await handleFileUpload(req.files.avatar, avatar);
     }
-    const testimonial = await Testimonial.create({ name, location, rating, review, tattooStyle, isApproved: isApproved === true || isApproved === 'true', isFeatured: isFeatured === true || isFeatured === 'true', avatar });
+    const testimonial = await Testimonial.create({
+      name, location, rating, review, tattooStyle,
+      isApproved: isApproved === true || isApproved === 'true',
+      isFeatured: isFeatured === true || isFeatured === 'true',
+      avatar
+    });
     res.json({ success: true, message: 'Testimonial created', data: testimonial });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -294,12 +266,17 @@ router.post('/testimonials', protectApi, async (req, res) => {
 
 router.put('/testimonials/:id', protectApi, async (req, res) => {
   try {
-    const { name, location, rating, review, tattooStyle, isApproved, isFeatured } = req.body;
-    const testimonial = await Testimonial.findByIdAndUpdate(req.params.id, {
+    const { name, location, rating, review, tattooStyle, isApproved, isFeatured, avatarUrl } = req.body;
+    const update = {
       name, location, rating, review, tattooStyle,
       isApproved: isApproved === true || isApproved === 'true',
       isFeatured: isFeatured === true || isFeatured === 'true'
-    }, { new: true });
+    };
+    if (avatarUrl) update.avatar = avatarUrl;
+    if (req.files && req.files.avatar) {
+      update.avatar = await handleFileUpload(req.files.avatar, update.avatar || '');
+    }
+    const testimonial = await Testimonial.findByIdAndUpdate(req.params.id, update, { new: true });
     res.json({ success: true, message: 'Testimonial updated', data: testimonial });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -315,7 +292,7 @@ router.delete('/testimonials/:id', protectApi, async (req, res) => {
   }
 });
 
-// ── Pricing ────────────────────────────────────────────────
+// ── Pricing Plans ──────────────────────────────────────────
 router.get('/pricing', protectApi, async (req, res) => {
   try {
     const plans = await Pricing.find().sort('order');
@@ -327,9 +304,9 @@ router.get('/pricing', protectApi, async (req, res) => {
 
 router.post('/pricing', protectApi, async (req, res) => {
   try {
-    const { name, price, period, description, features, isPopular, ctaText } = req.body;
-    const featuresArr = features ? (Array.isArray(features) ? features : features.split('\n').map(f => f.trim()).filter(Boolean)) : [];
-    const plan = await Pricing.create({ name, price, period, description, features: featuresArr, isPopular: isPopular === true || isPopular === 'true', ctaText });
+    const { name, price, period, description, features, isPopular } = req.body;
+    const feats = Array.isArray(features) ? features : (features ? features.split(',').map(f => f.trim()) : []);
+    const plan = await Pricing.create({ name, price, period, description, features: feats, isPopular: isPopular === true || isPopular === 'true' });
     res.json({ success: true, message: 'Pricing plan created', data: plan });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -338,14 +315,11 @@ router.post('/pricing', protectApi, async (req, res) => {
 
 router.put('/pricing/:id', protectApi, async (req, res) => {
   try {
-    const { name, price, period, description, features, isPopular, isActive, ctaText } = req.body;
-    const featuresArr = features ? (Array.isArray(features) ? features : features.split('\n').map(f => f.trim()).filter(Boolean)) : [];
-    const plan = await Pricing.findByIdAndUpdate(req.params.id, {
-      name, price, period, description, features: featuresArr,
-      isPopular: isPopular === true || isPopular === 'true',
-      isActive: isActive === true || isActive === 'true', ctaText
-    }, { new: true });
-    res.json({ success: true, message: 'Plan updated', data: plan });
+    const { name, price, period, description, features, isPopular, isActive } = req.body;
+    const update = { name, price, period, description, isPopular: isPopular === true || isPopular === 'true', isActive: isActive === true || isActive === 'true' };
+    if (features) update.features = Array.isArray(features) ? features : features.split(',').map(f => f.trim());
+    const plan = await Pricing.findByIdAndUpdate(req.params.id, update, { new: true });
+    res.json({ success: true, message: 'Pricing plan updated', data: plan });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -354,13 +328,13 @@ router.put('/pricing/:id', protectApi, async (req, res) => {
 router.delete('/pricing/:id', protectApi, async (req, res) => {
   try {
     await Pricing.findByIdAndDelete(req.params.id);
-    res.json({ success: true, message: 'Plan deleted' });
+    res.json({ success: true, message: 'Pricing plan deleted' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// ── Settings ───────────────────────────────────────────────
+// ── Settings (Comprehensive Site & Section Settings) ───────
 router.get('/settings', protectApi, async (req, res) => {
   try {
     const settingsArr = await Settings.find({});
@@ -374,12 +348,18 @@ router.get('/settings', protectApi, async (req, res) => {
 
 router.post('/settings', protectApi, async (req, res) => {
   try {
-    const updates = req.body;
+    let updates = { ...req.body };
+    if (req.files) {
+      for (const [fieldName, file] of Object.entries(req.files)) {
+        const uploadedUrl = await handleFileUpload(file);
+        if (uploadedUrl) updates[fieldName] = uploadedUrl;
+      }
+    }
     const ops = Object.entries(updates).map(([key, value]) =>
       Settings.findOneAndUpdate({ key }, { key, value }, { upsert: true, new: true })
     );
     await Promise.all(ops);
-    res.json({ success: true, message: 'Settings saved' });
+    res.json({ success: true, message: 'Settings saved successfully' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

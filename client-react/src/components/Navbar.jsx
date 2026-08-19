@@ -28,7 +28,6 @@ export default function Navbar({ theme, onToggleTheme, user, onOpenAuth, onLogou
           <li><a href="#categories">Styles</a></li>
           <li><a href="#portfolio">Portfolio</a></li>
           <li><a href="#process">Process</a></li>
-          <li><a href="#artists">Artists</a></li>
           <li><a href="#pricing">Pricing</a></li>
           <li><a href="#testimonials">Reviews</a></li>
         </ul>
@@ -84,7 +83,6 @@ export default function Navbar({ theme, onToggleTheme, user, onOpenAuth, onLogou
           <a href="#categories" onClick={() => setMobileNavOpen(false)}>Styles</a>
           <a href="#portfolio" onClick={() => setMobileNavOpen(false)}>Portfolio</a>
           <a href="#process" onClick={() => setMobileNavOpen(false)}>Process</a>
-          <a href="#artists" onClick={() => setMobileNavOpen(false)}>Artists</a>
           <a href="#pricing" onClick={() => setMobileNavOpen(false)}>Pricing</a>
           <a href="#testimonials" onClick={() => setMobileNavOpen(false)}>Reviews</a>
           {!user && <button className="r-nav-login-btn" onClick={() => { setMobileNavOpen(false); onOpenAuth(); }}>Login / Register</button>}

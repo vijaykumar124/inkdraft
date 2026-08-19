@@ -4,7 +4,6 @@ import Hero from './components/Hero';
 import Categories from './components/Categories';
 import Portfolio from './components/Portfolio';
 import Process from './components/Process';
-import Artists from './components/Artists';
 import Testimonials from './components/Testimonials';
 import Pricing from './components/Pricing';
 import OrderForm from './components/OrderForm';
@@ -61,10 +60,9 @@ export default function App() {
       <Categories categories={data.categories} />
       <Portfolio designs={data.featuredDesigns} />
       <Process />
-      <Artists artists={data.artists} />
       <Testimonials testimonials={data.testimonials} />
       <Pricing plans={data.pricingPlans} />
-      <OrderForm artists={data.artists} />
+      <OrderForm />
       <Footer settings={data.settings} />
 
       <UserAuthModal

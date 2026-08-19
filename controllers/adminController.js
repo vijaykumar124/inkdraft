@@ -11,6 +11,25 @@ const User = require('../models/User');
 const path = require('path');
 const fs = require('fs');
 
+const handleFileUpload = async (file, fallbackUrl = '') => {
+  if (!file) return fallbackUrl;
+  try {
+    const uploadsDir = path.join(__dirname, '../public/uploads');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    const filename = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '');
+    const uploadPath = path.join(uploadsDir, filename);
+    await file.mv(uploadPath);
+    return '/uploads/' + filename;
+  } catch (err) {
+    console.warn('Local file move failed (Vercel read-only filesystem), converting to Base64 Data URI:', err.message);
+    const mime = file.mimetype || 'image/png';
+    const base64 = file.data ? file.data.toString('base64') : '';
+    return base64 ? `data:${mime};base64,${base64}` : fallbackUrl;
+  }
+};
+
 // ── Auth ──────────────────────────────────────────────
 exports.getLogin = (req, res) => {
   if (req.session.adminToken) return res.redirect('/admin/dashboard');
@@ -115,16 +134,19 @@ exports.getDesigns = async (req, res) => {
 
 exports.createDesign = async (req, res) => {
   try {
-    const { title, category, artist, tags, isFeatured } = req.body;
-    let image = '';
+    const { title, category, tags, isFeatured, imageUrl } = req.body;
+    let image = imageUrl || '';
     if (req.files && req.files.image) {
-      const file = req.files.image;
-      const uploadPath = path.join(__dirname, '../public/uploads/', Date.now() + '_' + file.name);
-      await file.mv(uploadPath);
-      image = '/uploads/' + path.basename(uploadPath);
+      image = await handleFileUpload(req.files.image, image);
     }
     const tagsArr = tags ? tags.split(',').map(t => t.trim()) : [];
-    await Design.create({ title, category, artist: artist || undefined, tags: tagsArr, isFeatured: isFeatured === 'true', image });
+    await Design.create({
+      title,
+      category,
+      tags: tagsArr,
+      isFeatured: isFeatured === 'true',
+      image: image || 'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=600&q=80'
+    });
     res.json({ success: true, message: 'Design created' });
   } catch (err) {
     res.json({ success: false, message: err.message });
@@ -133,14 +155,12 @@ exports.createDesign = async (req, res) => {
 
 exports.updateDesign = async (req, res) => {
   try {
-    const { title, category, artist, tags, isFeatured, isActive } = req.body;
-    const update = { title, category, artist: artist || undefined, isFeatured: isFeatured === 'true', isActive: isActive === 'true' };
+    const { title, category, tags, isFeatured, isActive, imageUrl } = req.body;
+    const update = { title, category, isFeatured: isFeatured === 'true', isActive: isActive === 'true' };
     if (tags) update.tags = tags.split(',').map(t => t.trim());
+    if (imageUrl) update.image = imageUrl;
     if (req.files && req.files.image) {
-      const file = req.files.image;
-      const uploadPath = path.join(__dirname, '../public/uploads/', Date.now() + '_' + file.name);
-      await file.mv(uploadPath);
-      update.image = '/uploads/' + path.basename(uploadPath);
+      update.image = await handleFileUpload(req.files.image, update.image || '');
     }
     await Design.findByIdAndUpdate(req.params.id, update);
     res.json({ success: true, message: 'Design updated' });
