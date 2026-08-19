@@ -4,6 +4,7 @@
 
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Artist = require('../models/Artist');
 const Design = require('../models/Design');
 const Category = require('../models/Category');
@@ -88,9 +89,37 @@ router.post('/order', async (req, res) => {
 router.get('/category/:slug', async (req, res) => {
   try {
     await connectDb();
-    const category = await Category.findOne({ slug: req.params.slug, isActive: true });
-    if (!category) return res.status(404).json({ success: false, message: 'Category not found' });
-    const images = await CategoryImage.find({ categoryId: category._id }).sort('order createdAt');
+    const query = req.params.slug;
+    let category = null;
+
+    // 1. Try finding by ObjectId if valid
+    if (mongoose.Types.ObjectId.isValid(query)) {
+      category = await Category.findById(query);
+    }
+
+    // 2. Try finding by slug or name case-insensitively
+    if (!category) {
+      const slugRegex = new RegExp('^' + query.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') + '$', 'i');
+      category = await Category.findOne({
+        $or: [
+          { slug: query },
+          { slug: slugRegex },
+          { name: slugRegex }
+        ]
+      });
+    }
+
+    if (!category) {
+      return res.status(404).json({ success: false, message: 'Category not found' });
+    }
+
+    const images = await CategoryImage.find({
+      $or: [
+        { categoryId: category._id },
+        { categorySlug: category.slug }
+      ]
+    }).sort('order -createdAt');
+
     res.json({ success: true, data: { category, images } });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

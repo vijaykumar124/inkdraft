@@ -1,0 +1,267 @@
+<!-- ══════════════════════════════════════════════════════
+     CATEGORY GALLERY PAGE
+     ══════════════════════════════════════════════════════ -->
+<div class="cgal-page" style="padding-top: 100px;">
+  <!-- Page Header -->
+  <div class="cgal-header">
+    <a href="/#categories" class="cgal-back-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back to Home
+    </a>
+    <div class="cgal-header-content">
+      <h1 class="cgal-title"><%= category.name %></h1>
+      <% if (category.description) { %>
+        <p class="cgal-desc"><%= category.description %></p>
+      <% } %>
+      <div class="cgal-meta"><%= images.length %> artwork<%= images.length !== 1 ? 's' : '' %></div>
+    </div>
+    <!-- View Toggle -->
+    <div class="cgal-view-toggle">
+      <button type="button" class="cgal-toggle-btn active" id="btn-grid-view">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        Grid
+      </button>
+      <button type="button" class="cgal-toggle-btn" id="btn-slider-view">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="2" y="6" width="20" height="12" rx="2"/><path d="M8 2l-4 4 4 4"/><path d="M16 2l4 4-4 4"/>
+        </svg>
+        Slider
+      </button>
+    </div>
+  </div>
+
+  <% if (images.length === 0) { %>
+    <div class="cgal-empty" style="min-height: 40vh; text-align: center; padding: 60px 20px;">
+      <div style="font-size: 3.5rem; margin-bottom: 12px;">🖼️</div>
+      <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px;">No gallery images added yet</div>
+      <div style="color: var(--text-muted); font-size: 0.9rem;">Upload images in Admin Panel to display them here!</div>
+    </div>
+  <% } else { %>
+
+    <!-- GRID VIEW -->
+    <div id="view-grid-container" class="cgal-masonry">
+      <% images.forEach((img, idx) => { %>
+        <div class="cgal-masonry-item" data-idx="<%= idx %>">
+          <img src="<%= img.image %>" alt="<%= img.title || category.name %>" class="cgal-masonry-img" loading="lazy">
+          <div class="cgal-masonry-overlay">
+            <div class="cgal-masonry-icon">⊕</div>
+            <% if (img.title) { %>
+              <div class="cgal-masonry-caption"><%= img.title %></div>
+            <% } %>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+
+    <!-- SLIDER VIEW -->
+    <div id="view-slider-container" class="cgal-slider-wrap" style="display: none;">
+      <div class="cgal-slider-track" id="slider-track">
+        <% images.forEach((img, idx) => { %>
+          <div class="cgal-slide" data-idx="<%= idx %>">
+            <img src="<%= img.image %>" alt="<%= img.title || category.name %>" class="cgal-slide-img">
+            <% if (img.title) { %>
+              <div class="cgal-slide-caption"><%= img.title %></div>
+            <% } %>
+          </div>
+        <% }); %>
+      </div>
+      <button type="button" class="cgal-slider-nav cgal-slider-prev" id="slider-prev-btn">‹</button>
+      <button type="button" class="cgal-slider-nav cgal-slider-next" id="slider-next-btn">›</button>
+      <div class="cgal-slider-dots" id="slider-dots">
+        <% images.forEach((_, idx) => { %>
+          <button type="button" class="cgal-slider-dot <%= idx === 0 ? 'active' : '' %>" data-idx="<%= idx %>"></button>
+        <% }); %>
+      </div>
+      <div class="cgal-slider-counter" id="slider-counter">1 / <%= images.length %></div>
+    </div>
+
+    <!-- LIGHTBOX -->
+    <div class="cgal-lb-backdrop" id="ejs-lightbox" style="display: none;">
+      <button type="button" class="cgal-lb-close" id="lb-close-btn">✕</button>
+      <button type="button" class="cgal-lb-prev" id="lb-prev-btn">‹</button>
+
+      <div class="cgal-lb-main">
+        <img src="" alt="" class="cgal-lb-img" id="lb-main-img">
+        <div class="cgal-lb-caption" id="lb-caption"></div>
+        <div class="cgal-lb-counter" id="lb-counter"></div>
+      </div>
+
+      <button type="button" class="cgal-lb-next" id="lb-next-btn">›</button>
+
+      <!-- Thumbnail Strip -->
+      <div class="cgal-lb-strip" id="lb-strip">
+        <% images.forEach((img, idx) => { %>
+          <div class="cgal-lb-thumb" data-idx="<%= idx %>">
+            <img src="<%= img.image %>" alt="">
+          </div>
+        <% }); %>
+      </div>
+    </div>
+
+  <% } %>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const imagesData = <%- JSON.stringify(images) %>;
+  if (!imagesData || imagesData.length === 0) return;
+
+  const btnGrid = document.getElementById('btn-grid-view');
+  const btnSlider = document.getElementById('btn-slider-view');
+  const gridWrap = document.getElementById('view-grid-container');
+  const sliderWrap = document.getElementById('view-slider-container');
+
+  // Toggle View
+  btnGrid?.addEventListener('click', () => {
+    btnGrid.classList.add('active');
+    btnSlider.classList.remove('active');
+    gridWrap.style.display = 'columns';
+    gridWrap.style.display = 'block';
+    sliderWrap.style.display = 'none';
+  });
+
+  btnSlider?.addEventListener('click', () => {
+    btnSlider.classList.add('active');
+    btnGrid.classList.remove('active');
+    gridWrap.style.display = 'none';
+    sliderWrap.style.display = 'block';
+    updateSlider();
+  });
+
+  // Slider Logic
+  let sliderIdx = 0;
+  const slides = document.querySelectorAll('.cgal-slide');
+  const dots = document.querySelectorAll('.cgal-slider-dot');
+  const counter = document.getElementById('slider-counter');
+
+  function updateSlider() {
+    const total = slides.length;
+    slides.forEach((slide, idx) => {
+      let offset = idx - sliderIdx;
+      if (offset > total / 2) offset -= total;
+      if (offset < -total / 2) offset += total;
+      const absOffset = Math.abs(offset);
+      const isActive = offset === 0;
+
+      if (absOffset <= 2) {
+        slide.style.display = 'block';
+        const scale = isActive ? 1 : (absOffset === 1 ? 0.78 : 0.6);
+        const translateX = offset * 65;
+        const opacity = isActive ? 1 : (absOffset === 1 ? 0.65 : 0.35);
+        const zIndex = 10 - absOffset;
+        const filter = isActive ? 'none' : `grayscale(${absOffset * 40}%) brightness(0.7)`;
+
+        slide.style.transform = `translateX(${translateX}%) scale(${scale})`;
+        slide.style.opacity = opacity;
+        slide.style.zIndex = zIndex;
+        slide.style.filter = filter;
+        if (isActive) slide.classList.add('active');
+        else slide.classList.remove('active');
+      } else {
+        slide.style.display = 'none';
+      }
+    });
+
+    dots.forEach((dot, idx) => {
+      dot.classList.toggle('active', idx === sliderIdx);
+    });
+    if (counter) counter.textContent = `${sliderIdx + 1} / ${total}`;
+  }
+
+  document.getElementById('slider-prev-btn')?.addEventListener('click', () => {
+    sliderIdx = (sliderIdx - 1 + slides.length) % slides.length;
+    updateSlider();
+  });
+  document.getElementById('slider-next-btn')?.addEventListener('click', () => {
+    sliderIdx = (sliderIdx + 1) % slides.length;
+    updateSlider();
+  });
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      sliderIdx = parseInt(dot.getAttribute('data-idx'));
+      updateSlider();
+    });
+  });
+
+  // Lightbox Logic
+  let lbIdx = null;
+  const lbModal = document.getElementById('ejs-lightbox');
+  const lbImg = document.getElementById('lb-main-img');
+  const lbCap = document.getElementById('lb-caption');
+  const lbCount = document.getElementById('lb-counter');
+  const thumbs = document.querySelectorAll('.cgal-lb-thumb');
+
+  function openLb(idx) {
+    lbIdx = idx;
+    lbModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    renderLb();
+  }
+
+  function closeLb() {
+    lbIdx = null;
+    lbModal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function renderLb() {
+    if (lbIdx === null) return;
+    const item = imagesData[lbIdx];
+    if (!item) return;
+    lbImg.src = item.image;
+    lbCap.textContent = item.title || '';
+    lbCount.textContent = `${lbIdx + 1} / ${imagesData.length}`;
+
+    thumbs.forEach((t, i) => t.classList.toggle('active', i === lbIdx));
+    // Scroll active thumbnail into view
+    thumbs[lbIdx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+
+  document.querySelectorAll('.cgal-masonry-item').forEach(item => {
+    item.addEventListener('click', () => openLb(parseInt(item.getAttribute('data-idx'))));
+  });
+
+  slides.forEach(slide => {
+    slide.addEventListener('click', () => {
+      const idx = parseInt(slide.getAttribute('data-idx'));
+      if (idx === sliderIdx) openLb(idx);
+      else {
+        sliderIdx = idx;
+        updateSlider();
+      }
+    });
+  });
+
+  thumbs.forEach(t => {
+    t.addEventListener('click', () => {
+      lbIdx = parseInt(t.getAttribute('data-idx'));
+      renderLb();
+    });
+  });
+
+  document.getElementById('lb-close-btn')?.addEventListener('click', closeLb);
+  document.getElementById('lb-prev-btn')?.addEventListener('click', () => {
+    lbIdx = (lbIdx - 1 + imagesData.length) % imagesData.length;
+    renderLb();
+  });
+  document.getElementById('lb-next-btn')?.addEventListener('click', () => {
+    lbIdx = (lbIdx + 1) % imagesData.length;
+    renderLb();
+  });
+
+  lbModal?.addEventListener('click', (e) => {
+    if (e.target === lbModal) closeLb();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (lbIdx !== null) {
+      if (e.key === 'ArrowLeft') { lbIdx = (lbIdx - 1 + imagesData.length) % imagesData.length; renderLb(); }
+      if (e.key === 'ArrowRight') { lbIdx = (lbIdx + 1) % imagesData.length; renderLb(); }
+      if (e.key === 'Escape') closeLb();
+    }
+  });
+});
+</script>

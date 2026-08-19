@@ -1,6 +1,8 @@
+const mongoose = require('mongoose');
 const Artist = require('../models/Artist');
 const Design = require('../models/Design');
 const Category = require('../models/Category');
+const CategoryImage = require('../models/CategoryImage');
 const Testimonial = require('../models/Testimonial');
 const Pricing = require('../models/Pricing');
 const Settings = require('../models/Settings');
@@ -81,5 +83,53 @@ exports.submitOrder = async (req, res) => {
   } catch (err) {
     console.error('Order Submission Error:', err.message);
     res.status(500).json({ success: false, message: 'Failed to submit order.' });
+  }
+};
+
+exports.getCategoryGallery = async (req, res) => {
+  try {
+    await connectDb();
+    const query = req.params.slug;
+    let category = null;
+
+    if (mongoose.Types.ObjectId.isValid(query)) {
+      category = await Category.findById(query);
+    }
+    if (!category) {
+      const slugRegex = new RegExp('^' + query.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') + '$', 'i');
+      category = await Category.findOne({
+        $or: [
+          { slug: query },
+          { slug: slugRegex },
+          { name: slugRegex }
+        ]
+      });
+    }
+
+    if (!category) {
+      return res.status(404).render('error', { title: '404', message: 'Category not found', layout: 'layouts/main' });
+    }
+
+    const images = await CategoryImage.find({
+      $or: [
+        { categoryId: category._id },
+        { categorySlug: category.slug }
+      ]
+    }).sort('order -createdAt');
+
+    const settings = await getSettings();
+
+    res.render('category', {
+      title: `${category.name} Tattoo Gallery - InkDraft`,
+      metaDescription: category.description || `Explore ${category.name} tattoo designs and art.`,
+      category,
+      images,
+      settings,
+      user: req.session.user || null,
+      layout: 'layouts/main'
+    });
+  } catch (err) {
+    console.error('Category Page Error:', err);
+    res.status(500).render('error', { title: 'Error', message: 'Failed to load category', layout: 'layouts/main' });
   }
 };

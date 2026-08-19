@@ -198,13 +198,15 @@
         ];
         const displayCats = (categories && categories.length > 0) ? categories : defaultCats;
       %>
-      <% displayCats.forEach((cat, i) => { %>
-        <div class="category-card" data-reveal style="transition-delay: <%= i * 0.07 %>s">
+      <% displayCats.forEach((cat, i) => { 
+        const catSlug = cat.slug || (cat.name ? cat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') : cat._id);
+      %>
+        <a href="/category/<%= catSlug %>" class="category-card" data-reveal style="transition-delay: <%= i * 0.07 %>s; text-decoration: none; color: inherit; cursor: pointer;">
           <div class="category-circle">
             <img src="<%= cat.image || cat.img %>" alt="<%= cat.name %>" loading="lazy">
           </div>
           <span class="category-name"><%= cat.name %></span>
-        </div>
+        </a>
       <% }); %>
     </div>
   </div>
