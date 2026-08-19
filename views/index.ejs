@@ -354,27 +354,8 @@
             <div class="design-title"><%= d.title %></div>
             <div class="design-category"><%= d.category || d.cat %></div>
             <div class="design-actions">
-              <a href="#order-form" cl   specialty:'Japanese',  img:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80&fit=crop&crop=face', rating:'5.0', reviewCount:247,  instagram:'alex_inkcraft'   },
-          { name:'Maya Chen',     specialty:'Fine Line', img:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80&fit=crop&crop=face', rating:'4.9', reviewCount:198,  instagram:'maya_fineline'   },
-          { name:'Jordan Blake',  specialty:'Geometric', img:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80&fit=crop&crop=face', rating:'4.8', reviewCount:156,  instagram:'jordan_geo'      },
-          { name:'Sam Torres',    specialty:'Realism',   img:'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80&fit=crop&crop=face', rating:'5.0', reviewCount:312,  instagram:'sam_realism'     },
-          { name:'Kai Nakamura',  specialty:'Blackwork', img:'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80&fit=crop&crop=face', rating:'4.9', reviewCount:203,  instagram:'kai_blackwork'   }
-        ];
-        const showArtists = (artists && artists.length > 0) ? artists : demoArtists;
-      %>
-      <% showArtists.slice(0,5).forEach((a, i) => { %>
-        <div class="artist-card" data-reveal style="transition-delay:<%= i*0.08 %>s">
-          <div class="artist-photo">
-            <img src="<%= a.image || a.img %>" alt="<%= a.name %>" loading="lazy">
-            <div class="artist-photo-overlay">
-              <span class="artist-instagram">📸 @<%= a.instagram || 'inkdraft' %></span>
+              <a href="#order-form" class="design-action-btn">Get Similar Design →</a>
             </div>
-          </div>
-          <div class="artist-name"><%= a.name %></div>
-          <div class="artist-specialty"><%= a.specialty %></div>
-          <div class="artist-rating">
-            <span class="star">★</span> <%= a.rating || '5.0' %>
-            <span style="color:var(--text-muted)">(<%= a.reviewCount || 0 %> reviews)</span>
           </div>
         </div>
       <% }); %>
