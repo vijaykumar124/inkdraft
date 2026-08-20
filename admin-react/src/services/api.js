@@ -90,7 +90,7 @@ export const api = {
 
   // Settings
   getSettings: () => request('GET', '/settings'),
-  updateSettings: (data) => request('POST', '/settings', data),
+  updateSettings: (data, isFormData = false) => request('POST', '/settings', data, isFormData),
 
   // Users
   getUsers: () => request('GET', '/users'),

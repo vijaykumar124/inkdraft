@@ -1,7 +1,17 @@
 export default function Hero({ settings }) {
-  const heroImage = settings?.heroImage || 'https://images.unsplash.com/photo-1604836454547-28b7a2317d0e?w=1200&q=80';
+  const heroBadge = settings?.heroBadge || 'APPOINTMENTS NOW OPEN';
   const heroTitle = settings?.heroTitle || 'Wear Your Story In Custom Ink';
   const heroSub = settings?.heroSubtitle || 'World-class tattoo artists crafting bespoke, timeless body art tailored to your skin.';
+  const heroImage = settings?.heroImage || 'https://images.unsplash.com/photo-1604836454547-28b7a2317d0e?w=1200&q=80';
+  const heroCta1 = settings?.heroCtaPrimary || 'Book Consultation';
+  const heroCta2 = settings?.heroCtaSecondary || 'Explore Portfolio';
+
+  const stat1Num = settings?.stat1Num || '5,000+';
+  const stat1Lbl = settings?.stat1Lbl || 'Custom Tattoos Ink\'d';
+  const stat2Num = settings?.stat2Num || '4.9 ★';
+  const stat2Lbl = settings?.stat2Lbl || 'Client Rating';
+  const stat3Num = settings?.stat3Num || '10+ Yrs';
+  const stat3Lbl = settings?.stat3Lbl || 'Master Experience';
 
   return (
     <section className="r-hero" id="hero">
@@ -9,35 +19,35 @@ export default function Hero({ settings }) {
         {/* Left Column: Content */}
         <div className="r-hero-content">
           <div className="r-hero-badge">
-            <span className="r-badge-dot">●</span> APPOINTMENTS NOW OPEN
+            <span className="r-badge-dot">●</span> {heroBadge}
           </div>
           <h1 className="r-hero-title">{heroTitle}</h1>
           <p className="r-hero-sub">{heroSub}</p>
 
           <div className="r-hero-actions">
             <a href="#order-form" className="r-btn-main">
-              <span>Book Consultation</span>
+              <span>{heroCta1}</span>
               <span>→</span>
             </a>
             <a href="#portfolio" className="r-btn-outline">
-              Explore Portfolio
+              {heroCta2}
             </a>
           </div>
 
           <div className="r-hero-stats">
             <div>
-              <div className="r-stat-num">5,000+</div>
-              <div className="r-stat-lbl">Custom Tattoos Ink'd</div>
+              <div className="r-stat-num">{stat1Num}</div>
+              <div className="r-stat-lbl">{stat1Lbl}</div>
             </div>
             <div className="r-stat-divider"></div>
             <div>
-              <div className="r-stat-num">4.9 ★</div>
-              <div className="r-stat-lbl">Client Rating</div>
+              <div className="r-stat-num">{stat2Num}</div>
+              <div className="r-stat-lbl">{stat2Lbl}</div>
             </div>
             <div className="r-stat-divider"></div>
             <div>
-              <div className="r-stat-num">10+ Yrs</div>
-              <div className="r-stat-lbl">Master Experience</div>
+              <div className="r-stat-num">{stat3Num}</div>
+              <div className="r-stat-lbl">{stat3Lbl}</div>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { api } from '../services/api';
 import Spinner from '../components/Spinner';
 import { useToast } from '../hooks/useToast';
@@ -8,22 +8,40 @@ export default function Settings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('hero');
+  const heroFileRef = useRef(null);
   const { showToast } = useToast();
 
+  const loadSettings = async () => {
+    const res = await api.getSettings();
+    if (res?.success) setSettings(res.data);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    api.getSettings().then(res => {
-      if (res?.success) setSettings(res.data);
-      setLoading(false);
-    });
+    loadSettings();
   }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setSaving(true);
-    const res = await api.updateSettings(settings);
+
+    const fd = new FormData();
+    Object.entries(settings).forEach(([k, v]) => {
+      if (v !== undefined && v !== null) fd.append(k, v);
+    });
+
+    if (heroFileRef.current?.files[0]) {
+      fd.append('heroImage', heroFileRef.current.files[0]);
+    }
+
+    const res = await api.updateSettings(fd, true);
     setSaving(false);
-    if (res?.success) showToast('Settings saved successfully', 'success');
-    else showToast(res?.message || 'Failed to save', 'error');
+    if (res?.success) {
+      showToast('Settings saved successfully', 'success');
+      loadSettings();
+    } else {
+      showToast(res?.message || 'Failed to save settings', 'error');
+    }
   };
 
   const field = (label, key, type = 'text', placeholder = '') => (
@@ -92,16 +110,40 @@ export default function Settings() {
         {/* ── Hero Section Settings ── */}
         {activeTab === 'hero' && (
           <div className="r-card">
-            <div className="r-card-header"><div className="r-card-title">Hero Section & Banner</div></div>
+            <div className="r-card-header"><div className="r-card-title">Hero Section & Banner Image</div></div>
             <div className="r-card-body">
               <div className="r-form-grid">
                 {field('Badge Text', 'heroBadge', 'text', 'APPOINTMENTS NOW OPEN')}
-                {field('Hero Main Title', 'heroTitle', 'text', 'Wear Your Story In Custom Ink')}
-                {field('Hero Image URL (Paste Direct Link)', 'heroImage', 'url', 'https://images.unsplash.com/...')}
-                {field('CTA Primary Button Text', 'heroCtaPrimary', 'text', 'Book Consultation')}
-                {field('CTA Secondary Button Text', 'heroCtaSecondary', 'text', 'Explore Portfolio')}
+                {field('Hero Main Title', 'heroTitle', 'text', 'Design Your Next Tattoo')}
+                {field('CTA Primary Button Text', 'heroCtaPrimary', 'text', 'Order Custom Design →')}
+                {field('CTA Secondary Button Text', 'heroCtaSecondary', 'text', 'Browse Gallery')}
               </div>
-              {textarea('Hero Subtitle / Description', 'heroSubtitle', 'World-class tattoo artists crafting bespoke, timeless body art...')}
+              {textarea('Hero Subtitle / Description', 'heroSubtitle', 'Work with world-class tattoo artists to bring your vision to life...')}
+
+              <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--r-border)' }}>
+                <h4 style={{ color: 'var(--r-gold)', marginBottom: 12 }}>Hero Main Tattoo Image Settings</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
+                  <div>
+                    <div className="r-form-group">
+                      <label className="r-label">Upload Hero Image File</label>
+                      <input type="file" ref={heroFileRef} accept="image/*" className="r-input-file" />
+                    </div>
+                    {field('OR Paste Image Direct URL', 'heroImage', 'url', 'https://images.unsplash.com/...')}
+                  </div>
+
+                  <div>
+                    <label className="r-label" style={{ marginBottom: 6, display: 'block' }}>Current Hero Image Preview</label>
+                    <div style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid var(--r-border)', height: 160, width: 240, background: '#000' }}>
+                      <img
+                        src={settings.heroImage || 'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=900&q=85'}
+                        alt="Hero Preview"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={e => e.target.src = 'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=900&q=85'}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--r-border)' }}>
                 <h4 style={{ color: 'var(--r-gold)', marginBottom: 12 }}>Hero Counter Statistics (4 Items)</h4>

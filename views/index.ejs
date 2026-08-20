@@ -100,38 +100,37 @@
      ══════════════════════════════════════════════════════ -->
 <section id="hero" class="container">
   <div class="hero-content">
-    <span class="eyebrow">Premium Tattoo Studio</span>
+    <span class="eyebrow"><%= settings.heroBadge || 'APPOINTMENTS NOW OPEN' %></span>
 
     <h1 class="hero-title">
-      <span class="line"><span data-reveal>Design Your</span></span>
-      <span class="line"><span data-reveal style="transition-delay:0.12s">Next <em>Tattoo</em></span></span>
+      <span class="line"><span data-reveal><%= settings.heroTitle || 'Design Your Next Tattoo' %></span></span>
     </h1>
 
     <p class="hero-desc" data-reveal style="transition-delay:0.22s">
-      <%= settings.heroDescription || 'Work with world-class tattoo artists to bring your vision to life. From minimalist line work to elaborate full-sleeve masterpieces.' %>
+      <%= settings.heroSubtitle || settings.heroDescription || 'Work with world-class tattoo artists to bring your vision to life. From minimalist line work to elaborate full-sleeve masterpieces.' %>
     </p>
 
     <div class="hero-actions" data-reveal style="transition-delay:0.32s">
-      <a href="#order-form" class="btn btn-gold btn-lg">Order Custom Design →</a>
-      <a href="#featured" class="btn btn-outline btn-lg">Browse Gallery</a>
+      <a href="#order-form" class="btn btn-gold btn-lg"><%= settings.heroCtaPrimary || 'Order Custom Design →' %></a>
+      <a href="#featured" class="btn btn-outline btn-lg"><%= settings.heroCtaSecondary || 'Browse Gallery' %></a>
     </div>
 
     <div class="hero-stats" data-reveal style="transition-delay:0.42s">
       <div>
-        <span class="hero-stat-number" data-counter="<%= settings.statDesigns || 3000 %>">0</span>
-        <div class="hero-stat-label">Designs Created</div>
+        <span class="hero-stat-number"><%= settings.stat1Num || '5,000+' %></span>
+        <div class="hero-stat-label"><%= settings.stat1Lbl || 'Custom Tattoos Ink\'d' %></div>
       </div>
       <div>
-        <span class="hero-stat-number" data-counter="<%= settings.statArtists || 50 %>">0</span>
-        <div class="hero-stat-label">Expert Artists</div>
+        <span class="hero-stat-number"><%= settings.stat2Num || '4.9 ★' %></span>
+        <div class="hero-stat-label"><%= settings.stat2Lbl || 'Client Rating' %></div>
       </div>
       <div>
-        <span class="hero-stat-number" data-counter="<%= settings.statClients || 8500 %>">0</span>
-        <div class="hero-stat-label">Happy Clients</div>
+        <span class="hero-stat-number"><%= settings.stat3Num || '10+ Yrs' %></span>
+        <div class="hero-stat-label"><%= settings.stat3Lbl || 'Master Experience' %></div>
       </div>
       <div>
-        <span class="hero-stat-number" data-counter="<%= settings.statYears || 12 %>">0</span>
-        <div class="hero-stat-label">Years Exp.</div>
+        <span class="hero-stat-number"><%= settings.stat4Num || '100%' %></span>
+        <div class="hero-stat-label"><%= settings.stat4Lbl || 'Sterilized & Safe' %></div>
       </div>
     </div>
   </div>
@@ -139,10 +138,11 @@
   <!-- Right: premium tattoo image -->
   <div class="hero-visual" data-reveal="right">
     <img
-      src="https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=900&q=85&fit=crop&crop=center"
-      alt="Premium Japanese sleeve tattoo"
+      src="<%= settings.heroImage || 'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=900&q=85&fit=crop&crop=center' %>"
+      alt="Premium tattoo design InkDraft"
       class="hero-image-main"
-      fetchpriority="high">
+      fetchpriority="high"
+      onError="this.src='https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=900&q=85&fit=crop&crop=center'">
     <div class="hero-badge">
       <div class="hero-badge-icon">🏆</div>
       <div class="hero-badge-text">
