@@ -4,7 +4,7 @@
    Themes: Dark (Night) + Light (Day) with toggle
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 /* ── CSS Variables — DARK (Night) Mode ─────────────────── */
 :root {
@@ -874,3 +874,493 @@ footer {
 .auth-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(201,168,76,0.4); }
 .auth-footer-note { font-size: 0.78rem; color: var(--text-muted); text-align: center; margin-top: 18px; }
 .auth-footer-note .admin-link { color: var(--gold); text-decoration: underline; }
+
+/* ============================================================
+   CATEGORY GALLERY SYSTEM — SWIPEFLOW / NATIONAL PARKS DESIGN
+   ============================================================ */
+.cgal-page {
+  min-height: 100vh;
+  background: #0d0c0a;
+  background-image: 
+    radial-gradient(circle at 50% 20%, rgba(201, 168, 76, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 50% 80%, rgba(249, 115, 22, 0.04) 0%, transparent 50%);
+  color: var(--text-primary);
+  padding-top: 100px;
+  padding-bottom: 80px;
+  box-sizing: border-box;
+}
+
+/* Page Top Control Bar */
+.cgal-top-bar {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 32px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cgal-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.cgal-back-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateX(-3px);
+}
+
+/* View Toggle Switch */
+.cgal-view-toggle {
+  display: inline-flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 4px;
+}
+.cgal-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  background: transparent;
+  transition: all 0.25s ease;
+}
+.cgal-toggle-btn.active {
+  background: var(--gold);
+  color: #0d0c0a;
+  box-shadow: 0 2px 12px rgba(201, 168, 76, 0.3);
+}
+.cgal-toggle-btn:not(.active):hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Category Title Section (National Parks Style) */
+.cgal-hero-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 20px auto 40px;
+  padding: 0 20px;
+}
+.cgal-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.8rem, 6.5vw, 4.8rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: #f7f3ec;
+  line-height: 1.1;
+  margin: 0 0 12px;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.cgal-desc {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 10px;
+  font-weight: 300;
+}
+.cgal-meta {
+  display: inline-block;
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+  background: rgba(201, 168, 76, 0.1);
+  padding: 4px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+/* ── 3D SLIDER VIEW (NATIONAL PARKS / SWIPEFLOW STYLE) ────────── */
+.cgal-slider-wrap {
+  position: relative;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 0 60px;
+  overflow: hidden;
+  user-select: none;
+}
+.cgal-slider-track {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: clamp(420px, 58vh, 560px);
+}
+
+/* Tall Vertical Slide Card */
+.cgal-slide {
+  position: absolute;
+  width: clamp(250px, 24vw, 350px);
+  height: clamp(380px, 52vh, 500px);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1),
+              opacity 0.6s ease,
+              filter 0.6s ease,
+              box-shadow 0.6s ease;
+  cursor: pointer;
+  will-change: transform, filter, opacity;
+  background: #141310;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Active Slide Accent & Glow */
+.cgal-slide.active {
+  border-color: rgba(249, 115, 22, 0.5);
+  box-shadow: 
+    0 24px 60px rgba(0, 0, 0, 0.8),
+    0 0 70px rgba(249, 115, 22, 0.25),
+    0 0 30px rgba(201, 168, 76, 0.2);
+}
+.cgal-slide-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  transition: transform 0.6s ease;
+}
+.cgal-slide.active:hover .cgal-slide-img {
+  transform: scale(1.05);
+}
+
+/* Slide Caption Overlay (National Parks Style) */
+.cgal-slide-caption-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 36px 24px 24px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 60%, transparent 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.cgal-slide-tag {
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.cgal-slide-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+  font-weight: 500;
+  color: #fff;
+  margin: 0 0 10px;
+  line-height: 1.2;
+}
+.cgal-slide-divider {
+  width: 32px;
+  height: 2px;
+  background: #f97316; /* Bright Orange line accent */
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+.cgal-slide.active:hover .cgal-slide-divider {
+  width: 50px;
+}
+
+/* Circular Orange Navigation Arrow Buttons (Matches Screenshot 2!) */
+.cgal-slider-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #f97316; /* Vibrant Orange */
+  border: none;
+  color: #ffffff;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  z-index: 30;
+  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.4);
+}
+.cgal-slider-nav:hover {
+  background: #ea580c;
+  transform: translateY(-50%) scale(1.12);
+  box-shadow: 0 12px 32px rgba(249, 115, 22, 0.6);
+}
+.cgal-slider-nav:active {
+  transform: translateY(-50%) scale(0.95);
+}
+.cgal-slider-nav svg {
+  width: 22px;
+  height: 22px;
+  stroke: #ffffff;
+  stroke-width: 2.5;
+}
+.cgal-slider-prev { left: 40px; }
+.cgal-slider-next { right: 40px; }
+
+/* Slider Dots & Progress */
+.cgal-slider-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+.cgal-slider-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+.cgal-slider-dot.active {
+  background: #f97316;
+  width: 24px;
+  border-radius: 999px;
+}
+
+/* ── GRID / MASONRY VIEW ───────────────────────────────────── */
+.cgal-masonry {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 20px 32px 60px;
+  columns: 4 240px;
+  column-gap: 16px;
+}
+.cgal-masonry-item {
+  position: relative;
+  break-inside: avoid;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #161512;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.cgal-masonry-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(201, 168, 76, 0.15);
+  border-color: rgba(201, 168, 76, 0.4);
+}
+.cgal-masonry-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  transition: transform 0.5s ease;
+}
+.cgal-masonry-item:hover .cgal-masonry-img {
+  transform: scale(1.05);
+}
+.cgal-masonry-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, transparent 60%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 12px;
+}
+.cgal-masonry-item:hover .cgal-masonry-overlay {
+  opacity: 1;
+}
+.cgal-masonry-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(249, 115, 22, 0.9);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+.cgal-masonry-caption {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  right: 14px;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── FULLSCREEN LIGHTBOX MODAL ────────────────────────────── */
+.cgal-lb-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 7, 5, 0.96);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+.cgal-lb-close {
+  position: fixed;
+  top: 24px;
+  right: 28px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 1.4rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 100001;
+}
+.cgal-lb-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: rotate(90deg);
+}
+.cgal-lb-prev, .cgal-lb-next {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #f97316;
+  border: none;
+  color: #fff;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  z-index: 100001;
+  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.4);
+}
+.cgal-lb-prev:hover, .cgal-lb-next:hover {
+  background: #ea580c;
+  transform: translateY(-50%) scale(1.1);
+}
+.cgal-lb-prev { left: 24px; }
+.cgal-lb-next { right: 24px; }
+.cgal-lb-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: calc(100vw - 160px);
+  max-height: calc(100vh - 180px);
+}
+.cgal-lb-img {
+  max-width: 100%;
+  max-height: calc(100vh - 220px);
+  object-fit: contain;
+  border-radius: 12px;
+  display: block;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+}
+.cgal-lb-caption {
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.1rem;
+  margin-top: 14px;
+  text-align: center;
+}
+.cgal-lb-counter {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.78rem;
+  margin-top: 4px;
+}
+.cgal-lb-strip {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 84px;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 20px;
+  overflow-x: auto;
+  z-index: 100001;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.cgal-lb-thumb {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.25s ease;
+  opacity: 0.45;
+}
+.cgal-lb-thumb.active {
+  border-color: #f97316;
+  opacity: 1;
+  transform: scale(1.1);
+}
+.cgal-lb-thumb:hover { opacity: 0.85; }
+.cgal-lb-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .cgal-slider-nav { width: 44px; height: 44px; }
+  .cgal-slider-prev { left: 16px; }
+  .cgal-slider-next { right: 16px; }
+  .cgal-masonry { padding: 20px 20px 40px; columns: 3 180px; }
+}
+@media (max-width: 600px) {
+  .cgal-top-bar { padding: 0 16px; }
+  .cgal-title { font-size: 2.2rem; }
+  .cgal-slide { width: clamp(220px, 78vw, 300px); height: clamp(340px, 54vh, 440px); }
+  .cgal-slider-prev { left: 8px; width: 40px; height: 40px; }
+  .cgal-slider-next { right: 8px; width: 40px; height: 40px; }
+  .cgal-masonry { columns: 2 140px; column-gap: 10px; padding: 16px; }
+  .cgal-lb-prev { left: 8px; width: 42px; height: 42px; }
+  .cgal-lb-next { right: 8px; width: 42px; height: 42px; }
+}

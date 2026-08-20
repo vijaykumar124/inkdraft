@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 export default function CategoryPage() {
@@ -9,8 +9,8 @@ export default function CategoryPage() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'slider'
-  const [lightbox, setLightbox] = useState(null); // index or null
+  const [viewMode, setViewMode] = useState('slider'); // Default to 'slider' as in Screenshot 2!
+  const [lightbox, setLightbox] = useState(null);
   const [sliderIdx, setSliderIdx] = useState(0);
   const touchStartX = useRef(null);
 
@@ -39,7 +39,7 @@ export default function CategoryPage() {
         if (e.key === 'ArrowLeft') setLightbox(i => (i - 1 + images.length) % images.length);
         if (e.key === 'ArrowRight') setLightbox(i => (i + 1) % images.length);
         if (e.key === 'Escape') setLightbox(null);
-      } else if (viewMode === 'slider') {
+      } else if (viewMode === 'slider' && images.length > 0) {
         if (e.key === 'ArrowLeft') setSliderIdx(i => (i - 1 + images.length) % images.length);
         if (e.key === 'ArrowRight') setSliderIdx(i => (i + 1) % images.length);
       }
@@ -60,7 +60,7 @@ export default function CategoryPage() {
   const handleTouchEnd = (e) => {
     if (touchStartX.current === null) return;
     const diff = touchStartX.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 50) diff > 0 ? sliderNext() : sliderPrev();
+    if (Math.abs(diff) > 40) diff > 0 ? sliderNext() : sliderPrev();
     touchStartX.current = null;
   };
 
@@ -72,18 +72,20 @@ export default function CategoryPage() {
     const absOffset = Math.abs(offset);
     const isActive = offset === 0;
     const isVisible = absOffset <= 2;
+
     if (!isVisible) return { display: 'none' };
-    const scale = isActive ? 1 : absOffset === 1 ? 0.78 : 0.6;
-    const translateX = offset * 65;
-    const opacity = isActive ? 1 : absOffset === 1 ? 0.65 : 0.35;
+    const scale = isActive ? 1.05 : absOffset === 1 ? 0.82 : 0.65;
+    const translateX = offset * 70;
+    const opacity = isActive ? 1 : absOffset === 1 ? 0.7 : 0.4;
     const zIndex = 10 - absOffset;
-    const filter = isActive ? 'none' : `grayscale(${absOffset * 40}%) brightness(0.7)`;
+    const filter = isActive ? 'none' : `grayscale(100%) brightness(0.6)`;
+
     return {
       transform: `translateX(${translateX}%) scale(${scale})`,
       opacity,
       zIndex,
       filter,
-      cursor: isActive ? 'pointer' : 'pointer',
+      cursor: 'pointer',
     };
   };
 
@@ -110,53 +112,110 @@ export default function CategoryPage() {
 
   return (
     <div className="cgal-page">
-      {/* Page Header */}
-      <div className="cgal-header">
-        <button className="cgal-back-btn" onClick={() => navigate(-1)}>
+      {/* Top Bar */}
+      <div className="cgal-top-bar">
+        <button className="cgal-back-btn" onClick={() => navigate('/react/')}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-          Back
+          Back to Home
         </button>
-        <div className="cgal-header-content">
-          <h1 className="cgal-title">{category?.name}</h1>
-          {category?.description && <p className="cgal-desc">{category.description}</p>}
-          <div className="cgal-meta">{images.length} artwork{images.length !== 1 ? 's' : ''}</div>
-        </div>
-        {/* View Toggle */}
+
+        {/* View Switcher */}
         <div className="cgal-view-toggle">
-          <button
-            className={`cgal-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
-            onClick={() => setViewMode('grid')}
-            title="Grid View"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-            </svg>
-            Grid
-          </button>
           <button
             className={`cgal-toggle-btn ${viewMode === 'slider' ? 'active' : ''}`}
             onClick={() => setViewMode('slider')}
             title="Slider View"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="2" y="6" width="20" height="12" rx="2"/><path d="M8 2l-4 4 4 4"/><path d="M16 2l4 4-4 4"/>
             </svg>
             Slider
           </button>
+          <button
+            className={`cgal-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+            onClick={() => setViewMode('grid')}
+            title="Grid View"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            Grid
+          </button>
         </div>
+      </div>
+
+      {/* Hero Header (National Parks Serif Title) */}
+      <div className="cgal-hero-header">
+        <h1 className="cgal-title">{category?.name}</h1>
+        {category?.description && <p className="cgal-desc">{category.description}</p>}
+        <div className="cgal-meta">{images.length} Artwork{images.length !== 1 ? 's' : ''}</div>
       </div>
 
       {/* EMPTY STATE */}
       {fallbackImages && (
-        <div className="cgal-empty">
-          <div style={{ fontSize: '4rem', marginBottom: 16 }}>🖼️</div>
-          <div style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 8 }}>No images yet</div>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Images uploaded in admin will appear here.</div>
+        <div className="cgal-empty" style={{ textAlign: 'center', padding: '80px 20px' }}>
+          <div style={{ fontSize: '3.5rem', marginBottom: 12 }}>🖼️</div>
+          <div style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 8 }}>No gallery images added yet</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Upload images in Admin Panel to display them here!</div>
         </div>
       )}
 
-      {/* GRID VIEW */}
+      {/* SLIDER VIEW (SWIPEFLOW / NATIONAL PARKS STYLE) */}
+      {viewMode === 'slider' && !fallbackImages && (
+        <div
+          className="cgal-slider-wrap"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="cgal-slider-track">
+            {images.map((img, idx) => (
+              <div
+                key={img._id}
+                className={`cgal-slide ${idx === sliderIdx ? 'active' : ''}`}
+                style={getSliderStyle(idx)}
+                onClick={() => {
+                  if (idx === sliderIdx) openLightbox(idx);
+                  else setSliderIdx(idx);
+                }}
+              >
+                <img
+                  src={img.image}
+                  alt={img.title || category?.name}
+                  className="cgal-slide-img"
+                  onError={e => { e.target.src = 'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=600&q=80'; }}
+                />
+                <div className="cgal-slide-caption-wrap">
+                  <div className="cgal-slide-tag">{category?.name}</div>
+                  <div className="cgal-slide-title">{img.title || category?.name}</div>
+                  <div className="cgal-slide-divider"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Circular Orange Arrow Nav Buttons */}
+          <button className="cgal-slider-nav cgal-slider-prev" onClick={sliderPrev} aria-label="Previous">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor"/></svg>
+          </button>
+          <button className="cgal-slider-nav cgal-slider-next" onClick={sliderNext} aria-label="Next">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor"/></svg>
+          </button>
+
+          <div className="cgal-slider-dots">
+            {images.map((_, idx) => (
+              <button
+                key={idx}
+                className={`cgal-slider-dot ${idx === sliderIdx ? 'active' : ''}`}
+                onClick={() => setSliderIdx(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* GRID VIEW (MASONRY) */}
       {viewMode === 'grid' && !fallbackImages && (
         <div className="cgal-masonry">
           {images.map((img, idx) => (
@@ -181,52 +240,6 @@ export default function CategoryPage() {
         </div>
       )}
 
-      {/* SLIDER VIEW */}
-      {viewMode === 'slider' && !fallbackImages && (
-        <div
-          className="cgal-slider-wrap"
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          <div className="cgal-slider-track">
-            {images.map((img, idx) => (
-              <div
-                key={img._id}
-                className={`cgal-slide ${idx === sliderIdx ? 'active' : ''}`}
-                style={getSliderStyle(idx)}
-                onClick={() => {
-                  if (idx === sliderIdx) openLightbox(idx);
-                  else setSliderIdx(idx);
-                }}
-              >
-                <img
-                  src={img.image}
-                  alt={img.title || category?.name}
-                  className="cgal-slide-img"
-                  onError={e => { e.target.src = 'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=600&q=80'; }}
-                />
-                {idx === sliderIdx && img.title && (
-                  <div className="cgal-slide-caption">{img.title}</div>
-                )}
-              </div>
-            ))}
-          </div>
-          <button className="cgal-slider-nav cgal-slider-prev" onClick={sliderPrev} aria-label="Previous">‹</button>
-          <button className="cgal-slider-nav cgal-slider-next" onClick={sliderNext} aria-label="Next">›</button>
-          <div className="cgal-slider-dots">
-            {images.map((_, idx) => (
-              <button
-                key={idx}
-                className={`cgal-slider-dot ${idx === sliderIdx ? 'active' : ''}`}
-                onClick={() => setSliderIdx(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
-              />
-            ))}
-          </div>
-          <div className="cgal-slider-counter">{sliderIdx + 1} / {images.length}</div>
-        </div>
-      )}
-
       {/* LIGHTBOX */}
       {lightbox !== null && (
         <div
@@ -234,7 +247,9 @@ export default function CategoryPage() {
           onClick={e => { if (e.target === e.currentTarget) closeLightbox(); }}
         >
           <button className="cgal-lb-close" onClick={closeLightbox} aria-label="Close">✕</button>
-          <button className="cgal-lb-prev" onClick={lbPrev} aria-label="Previous">‹</button>
+          <button className="cgal-lb-prev" onClick={lbPrev} aria-label="Previous">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
 
           <div className="cgal-lb-main">
             <img
@@ -249,7 +264,9 @@ export default function CategoryPage() {
             <div className="cgal-lb-counter">{lightbox + 1} / {images.length}</div>
           </div>
 
-          <button className="cgal-lb-next" onClick={lbNext} aria-label="Next">›</button>
+          <button className="cgal-lb-next" onClick={lbNext} aria-label="Next">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
 
           {/* Thumbnail strip */}
           <div className="cgal-lb-strip">
