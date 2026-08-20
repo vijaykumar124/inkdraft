@@ -878,16 +878,17 @@ footer {
 /* ============================================================
    CATEGORY GALLERY SYSTEM — SWIPEFLOW / NATIONAL PARKS DESIGN
    ============================================================ */
+/* ============================================================
+   CATEGORY GALLERY SYSTEM — SWIPEFLOW / NATIONAL PARKS DESIGN
+   ============================================================ */
 .cgal-page {
   min-height: 100vh;
-  background: #0d0c0a;
-  background-image: 
-    radial-gradient(circle at 50% 20%, rgba(201, 168, 76, 0.08) 0%, transparent 60%),
-    radial-gradient(circle at 50% 80%, rgba(249, 115, 22, 0.04) 0%, transparent 50%);
+  background: var(--bg-primary);
   color: var(--text-primary);
   padding-top: 100px;
   padding-bottom: 80px;
   box-sizing: border-box;
+  transition: background 0.35s ease, color 0.35s ease;
 }
 
 /* Page Top Control Bar */
@@ -903,10 +904,10 @@ footer {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   color: var(--text-secondary);
-  padding: 9px 18px;
+  padding: 8px 18px;
   border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 500;
@@ -915,9 +916,9 @@ footer {
   transition: all 0.25s ease;
 }
 .cgal-back-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.25);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--gold);
   transform: translateX(-3px);
 }
 
@@ -925,8 +926,8 @@ footer {
 .cgal-view-toggle {
   display: inline-flex;
   gap: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 999px;
   padding: 4px;
 }
@@ -947,11 +948,11 @@ footer {
 .cgal-toggle-btn.active {
   background: var(--gold);
   color: #0d0c0a;
-  box-shadow: 0 2px 12px rgba(201, 168, 76, 0.3);
+  box-shadow: 0 2px 12px var(--gold-glow);
 }
 .cgal-toggle-btn:not(.active):hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  background: var(--bg-elevated);
 }
 
 /* Category Title Section (National Parks Style) */
@@ -966,10 +967,9 @@ footer {
   font-size: clamp(2.8rem, 6.5vw, 4.8rem);
   font-weight: 400;
   letter-spacing: -0.01em;
-  color: #f7f3ec;
+  color: var(--text-primary);
   line-height: 1.1;
   margin: 0 0 12px;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 .cgal-desc {
   color: var(--text-secondary);
@@ -985,18 +985,18 @@ footer {
   text-transform: uppercase;
   color: var(--gold);
   font-weight: 600;
-  background: rgba(201, 168, 76, 0.1);
+  background: var(--gold-glow);
   padding: 4px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(201, 168, 76, 0.2);
+  border: 1px solid var(--border);
 }
 
-/* ── 3D SLIDER VIEW (NATIONAL PARKS / SWIPEFLOW STYLE) ────────── */
+/* ── 3D SLIDER VIEW (PREMIUM CENTER SPOTLIGHT) ────────── */
 .cgal-slider-wrap {
   position: relative;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 20px 0 60px;
+  padding: 30px 0 70px;
   overflow: hidden;
   user-select: none;
 }
@@ -1005,15 +1005,15 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: clamp(420px, 58vh, 560px);
+  height: clamp(450px, 62vh, 600px);
 }
 
-/* Tall Vertical Slide Card */
+/* Vertical Slide Card — Crisper 6px Border Radius */
 .cgal-slide {
   position: absolute;
-  width: clamp(250px, 24vw, 350px);
-  height: clamp(380px, 52vh, 500px);
-  border-radius: 14px;
+  width: clamp(260px, 26vw, 370px);
+  height: clamp(400px, 55vh, 540px);
+  border-radius: 6px; /* Sleeker, smaller border radius */
   overflow: hidden;
   transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1),
               opacity 0.6s ease,
@@ -1021,17 +1021,16 @@ footer {
               box-shadow 0.6s ease;
   cursor: pointer;
   will-change: transform, filter, opacity;
-  background: #141310;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
 }
 
-/* Active Slide Accent & Glow */
+/* Active Center Slide — BADI (LARGER) & PREMIUM SPOTLIGHT */
 .cgal-slide.active {
-  border-color: rgba(249, 115, 22, 0.5);
+  border-color: var(--gold);
   box-shadow: 
-    0 24px 60px rgba(0, 0, 0, 0.8),
-    0 0 70px rgba(249, 115, 22, 0.25),
-    0 0 30px rgba(201, 168, 76, 0.2);
+    0 30px 70px rgba(0, 0, 0, 0.7),
+    0 0 60px var(--gold-glow);
 }
 .cgal-slide-img {
   width: 100%;
@@ -1039,20 +1038,21 @@ footer {
   object-fit: cover;
   display: block;
   pointer-events: none;
+  border-radius: 6px;
   transition: transform 0.6s ease;
 }
 .cgal-slide.active:hover .cgal-slide-img {
   transform: scale(1.05);
 }
 
-/* Slide Caption Overlay (National Parks Style) */
+/* Slide Caption Overlay */
 .cgal-slide-caption-wrap {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 36px 24px 24px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 60%, transparent 100%);
+  padding: 40px 24px 24px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.5) 60%, transparent 100%);
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -1063,7 +1063,7 @@ footer {
   font-size: 0.72rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.75);
   margin-bottom: 6px;
   font-weight: 600;
 }
@@ -1078,12 +1078,12 @@ footer {
 .cgal-slide-divider {
   width: 32px;
   height: 2px;
-  background: #f97316; /* Bright Orange line accent */
+  background: var(--gold);
   border-radius: 2px;
   transition: width 0.3s ease;
 }
 .cgal-slide.active:hover .cgal-slide-divider {
-  width: 50px;
+  width: 54px;
 }
 
 /* Circular Orange Navigation Arrow Buttons (Matches Screenshot 2!) */

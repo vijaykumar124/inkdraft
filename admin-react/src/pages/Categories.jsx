@@ -90,7 +90,7 @@ export default function Categories() {
                     </td>
                     <td style={{ color: 'var(--r-text-muted)', fontSize: '0.78rem' }}>{c.slug}</td>
                     <td style={{ color: 'var(--r-text-secondary)', fontSize: '0.8rem', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.description || '—'}</td>
-                    <td><span className={`r-badge ${c.isActive ? 'r-badge-green' : 'r-badge-red'}`}>{c.isActive ? 'Active' : 'Hidden'}</span></td>
+                    <td><span className={`r-badge ${c.isActive !== false ? 'r-badge-green' : 'r-badge-red'}`}>{c.isActive !== false ? 'Active' : 'Hidden'}</span></td>
                     <td>
                       <div className="r-actions">
                         <button
@@ -98,7 +98,17 @@ export default function Categories() {
                           style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', border: 'none' }}
                           onClick={() => navigate(`/admin/category-gallery/${c._id}`)}
                         >🖼️ Images</button>
-                        <button className="r-btn r-btn-sm r-btn-secondary" onClick={() => { setForm({ name: c.name, slug: c.slug, description: c.description || '', isActive: c.isActive, imageUrl: c.image || '' }); setEditId(c._id); setModal('edit'); }}>✏️ Edit</button>
+                        <button className="r-btn r-btn-sm r-btn-secondary" onClick={() => {
+                          setForm({
+                            name: c.name,
+                            slug: c.slug,
+                            description: c.description || '',
+                            isActive: c.isActive !== false,
+                            imageUrl: c.image || ''
+                          });
+                          setEditId(c._id);
+                          setModal('edit');
+                        }}>✏️ Edit</button>
                         <button className="r-btn r-btn-sm r-btn-danger" onClick={() => handleDelete(c._id)}>🗑</button>
                       </div>
                     </td>
@@ -118,7 +128,18 @@ export default function Categories() {
       >
         <div className="r-form-group">
           <label className="r-label">Category Name *</label>
-          <input type="text" className="r-input" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-') }))} placeholder="e.g. Traditional" required />
+          <input
+            type="text"
+            className="r-input"
+            value={form.name}
+            onChange={e => setForm(p => ({
+              ...p,
+              name: e.target.value,
+              slug: modal === 'add' ? e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-') : p.slug
+            }))}
+            placeholder="e.g. Traditional"
+            required
+          />
         </div>
         <div className="r-form-group">
           <label className="r-label">Slug *</label>
@@ -139,15 +160,13 @@ export default function Categories() {
           <input type="url" className="r-input" value={form.imageUrl} onChange={e => setForm(p => ({ ...p, imageUrl: e.target.value }))} placeholder="https://images.unsplash.com/photo-..." />
         </div>
 
-        {editId && (
-          <div className="r-form-group">
-            <label className="r-label">Status</label>
-            <select className="r-input" value={form.isActive ? 'true' : 'false'} onChange={e => setForm(p => ({ ...p, isActive: e.target.value === 'true' }))}>
-              <option value="true">Active</option>
-              <option value="false">Hidden</option>
-            </select>
-          </div>
-        )}
+        <div className="r-form-group">
+          <label className="r-label">Status</label>
+          <select className="r-input" value={form.isActive ? 'true' : 'false'} onChange={e => setForm(p => ({ ...p, isActive: e.target.value === 'true' }))}>
+            <option value="true">Active (Visible on Website)</option>
+            <option value="false">Hidden</option>
+          </select>
+        </div>
       </Modal>
     </div>
   );

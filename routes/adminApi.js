@@ -177,7 +177,8 @@ router.post('/categories', protectApi, async (req, res) => {
 router.put('/categories/:id', protectApi, async (req, res) => {
   try {
     const { name, slug, description, isActive, imageUrl } = req.body;
-    const update = { name, slug, description, isActive: isActive === true || isActive === 'true' };
+    const isExplicitlyHidden = isActive === false || isActive === 'false';
+    const update = { name, slug, description, isActive: !isExplicitlyHidden };
     if (imageUrl) update.image = imageUrl;
     if (req.files && req.files.image) {
       update.image = await handleFileUpload(req.files.image, update.image || '');
